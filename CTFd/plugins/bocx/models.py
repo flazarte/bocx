@@ -57,10 +57,10 @@ class BOCXCategoryChallenge(Challenges):
     __table_args__ = {'extend_existing': True}
     id = db.Column(None, db.ForeignKey('challenges.id', ondelete="CASCADE"), primary_key=True)
     ctf_category_id = db.Column(
-        db.Integer, db.ForeignKey("bocx_category.id", ondelete="CASCADE")
+        db.Integer, db.ForeignKey("bocx_category.id", ondelete="CASCADE"), nullable=True
     )
     team_id = db.Column(
-        db.Integer, db.ForeignKey("teams.id", ondelete="CASCADE")
+        db.Integer, db.ForeignKey("teams.id", ondelete="CASCADE"), nullable=True
     )
     initial = db.Column(db.Integer)
     writeups = db.Column(db.Text)
@@ -111,10 +111,13 @@ class CategoryGameClass(BaseChallenge):
         # Create challenge
         data = request.form or request.get_json()
         chal = BOCXCategoryChallenge(
-            ctf_category_id=data['bocx_category'],
-            team_id=data['team_id'],
+            #ctf_category_id=data['bocx_category'],
+            ctf_category_id=1,
+            #team_id=data['team_id'],
+            team_id=1,
             name=data['name'],
-            description=data['description'],
+            #description=data['description'],
+            description='',
             value=data['value'],
             category=data['category'],
             type=data['type'],

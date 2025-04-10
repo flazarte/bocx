@@ -3,25 +3,12 @@
 {% block header %}
 {% endblock %}
 {% block name %}
-	<div class="form-group">
-		<label>
-			Cyber eX Category:<br>
-			<small class="form-text text-muted">
-				The Cyber Exercise Category level instances
-			</small>
-		</label>
-		<select id="bocx_category" class="form-control" name="bocx_category" value="" required>
-		</select>
-		<small class="form-text text-muted">
-			Control users Cyber eX Category level
-		</small>
-	</div>
 
 	<div class="form-group">
 		<label>
 			Name:<br>
 			<small class="form-text text-muted">
-				The name of your challenge
+				The name of your bocx ctf  challenge
 			</small>
 		</label>
 		<input type="text" class="form-control" name="name" placeholder="Enter challenge name">
@@ -36,9 +23,7 @@
 				The category of your challenge
 			</small>
 		</label>
-		<!-- <input type="text" class="form-control" name="category" placeholder="Enter challenge category"> -->
-		<select id="category" class="form-control" name="category" value="" required>
-		</select>
+		<input type="text" class="form-control" name="category" placeholder="Enter challenge category">
 	</div>
 {% endblock %}
 
@@ -50,13 +35,13 @@
 				Use this to give a brief introduction to your challenge.
 			</small>
 		</label>
-		<textarea id="new-desc-editor" class="form-control markdown" name="description" rows="10"></textarea>
+		<!-- <textarea id="new-desc-editor" class="form-control markdown" name="description" rows="10"></textarea> -->
 	</div>
 	<!-- write ups field -->
 	<div class="form-group">
 		<label>
-			Chronicles link<br>
-			<small class="form-text text-muted">The Challenge writeups link</small>
+			Reference link<br>
+			<small class="form-text text-muted">The Challenge reference  link</small>
 		</label>
 		<input type="text" class="form-control" name="writeups" value="">
 	</div>

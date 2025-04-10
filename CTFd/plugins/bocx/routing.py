@@ -1,3 +1,4 @@
+import os, json
 from CTFd.models import db
 from flask import (
     render_template,
@@ -14,9 +15,12 @@ from CTFd.utils.decorators import admins_only
 from CTFd.plugins import bypass_csrf_protection
 from CTFd.plugins.bocx.models  import BOCX_category
 from CTFd.plugins.bocx.utils import  get_category
+from werkzeug.utils import secure_filename
+from CTFd.plugins.challenges import CHALLENGE_CLASSES, get_chal_class
+from CTFd.models import Challenges, Flags, Solves
 
-#app = Flask(__name__, template_folder='templates')
-#app.config['UPLOAD_PATH'] = 'CTFd/plugins/bocx/'
+app = Flask(__name__, template_folder='templates')
+app.config['UPLOAD_PATH'] = 'CTFd/plugins/bocx/'
 FILE_LOCATON = '/plugins/bocx/writeups/'
 FILE_LOCATON_COUNTER = '/plugins/bocx/countermeasure/'
 FILE_LOCATON_KNOWLEDGE = '/plugins/bocx/knowledge/'
@@ -40,12 +44,6 @@ def bocx_category_update_api(bocx_id):
     results = []
     #update data
     if request.method == 'POST':
-        #lockout itegration
-        #lockout = request.form.get('lockout', None)
-        #if lockout != None:
-         #   if request.form['lockout'] == 'true':
-          #      db.session.query(c3_lockout).filter_by(ctf_category_id = c3_id).update(dict(lockout_percentage = request.form['lockout-percent']))
-        #c3 category update
         bocx_update = request.form.get('bocx-category', None)
         if bocx_update != None:
             if request.form['bocx-category'] == 'true':
@@ -81,7 +79,7 @@ def bocx_category_update_api(bocx_id):
 
     #fetch data
     if request.method == 'GET':
-        cat_exist = db.session.query(BOCX_category).filter_by(id = bocx_id).all()
+        cat_exist = db.session.query(BOCX_category).order_by(BOCX_category.id.asc()).all()
         if cat_exist:
             for cat in cat_exist:
                 results.append({
@@ -94,3 +92,49 @@ def bocx_category_update_api(bocx_id):
             return jsonify(results)
     return jsonify(results)
 
+#override admin challenges_new
+@admins_only
+def bocx_challenges_new():
+    types = CHALLENGE_CLASSES.keys()
+    return render_template("admin/challenges/new.html", types=types, cat=get_category)
+
+
+@admins_only
+def bocx_challenges_detail(challenge_id):
+    results = []
+    challenges = dict(
+        Challenges.query.with_entities(Challenges.id, Challenges.name).all()
+    )
+    challenge = Challenges.query.filter_by(id=challenge_id).first_or_404()
+    solves = (
+        Solves.query.filter_by(challenge_id=challenge.id)
+        .order_by(Solves.date.asc())
+        .all()
+    )
+    flags = Flags.query.filter_by(challenge_id=challenge.id).all()
+
+    try:
+        challenge_class = get_chal_class(challenge.type)
+    except KeyError:
+        abort(
+            500,
+            f"The underlying challenge type ({challenge.type}) is not installed. This challenge can not be loaded.",
+        )
+
+    update_j2 = render_template(
+        challenge_class.templates["update"].lstrip("/"), challenge=challenge
+    )
+
+    update_script = url_for(
+        "views.static_html", route=challenge_class.scripts["update"].lstrip("/")
+    )
+
+    return render_template(
+        "admin/challenges/challenge.html",
+        update_template=update_j2,
+        update_script=update_script,
+        challenge=challenge,
+        challenges=challenges,
+        solves=solves,
+        flags=flags,
+    )

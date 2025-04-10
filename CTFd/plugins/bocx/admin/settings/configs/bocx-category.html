@@ -9,24 +9,23 @@
 
         <ul class="nav nav-tabs mt-3" role="tablist">
             <li class="nav-item">
-                <a class="nav-link" href="#challenge-bocx-category-list" role="tab" data-toggle="tab">
+                <a class="nav-link active" href="#challenge-bocx-category-list" role="tab" data-toggle="tab">
                     List
-                </a>
-            </li>
-            <li class="nav-item active">
-                <a class="nav-link active" href="#challenge-bocx-category-create" role="tab" data-toggle="tab">
-                    Create CTF Category
                 </a>
             </li>
         </ul>
 
         <div class="tab-content">
-            <div role="tabpanel" class="tab-pane" id="challenge-bocx-category-list">
+            <div role="tabpanel" class="tab-pane active" id="challenge-bocx-category-list">
                 <div class="col-md-12 py-3">
                     <small>BOCX CTF Exercise Category List.</small>
                 </div>
                 <div class="float-right pb-3">
                     <div class="btn-group" role="group">
+                         <button type="button" class="btn btn-outline-secondary" data-toggle="tooltip"
+                            title="Add CTF  Category" id="bocx-add-button">
+                            <i class="btn-fa fas fa-plus"></i>
+                        </button>
                         <button type="button" class="btn btn-outline-secondary" data-toggle="tooltip"
                             title="Edit Category" id="bocx-edit-button">
                             <i class="btn-fa fas fa-pencil-alt"></i>
@@ -64,7 +63,7 @@
                                 <td class="text-center">{{ bocx_cat.id }}</td>
                                 <td><a href="#">{{
                                         bocx_cat.category }}</a></td>
-                                <td><img style="width: 100px;height: auto;" src="{{script_root}}{{bocx_cat.location }}" alt="{{ bocx_cat.image_name }}" srcset="{{script_root}}{{ c3_cat.location }}"></td>
+                                <td><img style="width: 100px;height: auto;" src="{{script_root}}{{bocx_cat.location }}" alt="{{ bocx_cat.image_name }}" srcset="{{script_root}}{{ bocx_cat.location }}"></td>
                                 <td class="d-none d-md-table-cell d-lg-table-cell">{{ bocx_cat.description }}</td>
                             </tr>
                             {% endfor %}
@@ -72,46 +71,57 @@
                     </table>
                 </div>
             </div>
-            <div role="tabpanel" class="tab-pane active" id="challenge-bocx-category-create">
-                <div class="col-md-12 py-3">
-                    <small>Create CTF  Category.</small>
-                </div>
 
-                <div id="challenge-bocx-category-create" class="pt-3">
-                    <div class="form-group">
-                        <label for="challenge-bocx-category-name">
-                            BOCX CTF  Exercise Category
-                            <small class="form-text text-muted">The CTF Challenge Category.</small>
-                        </label>
-                        <input class="form-control" id='challenge-bocx-category-name' name='challenge-bocx-category-name'
-                            type='text' placeholder="Red Team, Blue Team....">
-                    </div>
+<!--Add CTF Category Modal -->
+<div class="modal bocx_add fade" tabindex="-1" role="dialog" aria-modal="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add  CTF  Challenges</h5> <button type="button" class="close" data-dismiss="modal"
+                    aria-label="Close"> <span aria-hidden="true">×</span> </button>
+            </div>
+            <div class="modal-body">
+                <form action="{{url_for('bocx.bocx_update_api',bocx_id=0)}}" method="post"  enctype=multipart/form-data>
+                    <div id="challenge-bocx-category-add" class="pt-3">
+                        <div class="form-group">
+                            <label for="challenge-bocx-category-name">
+                                BOCX CTF  Category
+                                <small class="form-text text-muted">The CTF challenge category.</small>
+                            </label>
+                            <input class="form-control" id="challenge-bocx-category-name"
+                                name="challenge-bocx-category-name" type="text" placeholder="Red Team, Blue Team...">
+                        </div>
 
-                    <div class="form-group">
-                        <label>
-                            Category Description<br>
-                            <small class="form-text text-muted">
-                                Description for the challenge Category
-                            </small>
-                        </label>
-                        <textarea class="form-control" type="text" id="challenge-bocx-category-description"
-                            name="challenge-bocx-category-description" rows="5"
-                            placeholder="This is category description.."></textarea>
+                        <div class="form-group">
+                            <label>
+                                Category Description<br>
+                                <small class="form-text text-muted">
+                                    Description for the challenge Category
+                                </small>
+                            </label>
+                            <textarea class="form-control" type="text" id="challenge-bocx-category-description"
+                                name="challenge-bocx-category-description" rows="5"
+                                placeholder="This is category description.."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="bocx_image">
+                                Category Image
+                                <small class="form-text text-muted">CTF Selector Image</small>
+                                <small class="form-text text-muted">Insert new Image to replace!</small>
+                            </label>
+                            <br>
+                            <input  type="file" id="bocx_image" name="bocx_image" accept=".png,.jpg,.jpeg,.svg">
+                        </div>
+                        <input type="hidden" value="true" name="bocx-category">
+                        <button id="bocx_add" type="submit" class="btn btn-md btn-primary float-right">Add</button>
                     </div>
-                    <div class="form-group">
-                        <label for="bocx_image">
-                            Category Image
-                            <small class="form-text text-muted">CTF Selector Image</small>
-                        </label>
-                        <br>
-                        <input  type="file" id="bocx_image" name="bocx_image" accept=".png,.jpg,.jpeg,.svg">
-                    </div>
-                    <button type="submit" class="btn btn-md btn-primary float-right">Create</button>
-                </div>
+                </form>
             </div>
         </div>
-    </form>
+    </div>
 </div>
+
+
 
 <!-- update Modal -->
 <div class="modal bocx_update fade" tabindex="-1" role="dialog" aria-modal="true">
