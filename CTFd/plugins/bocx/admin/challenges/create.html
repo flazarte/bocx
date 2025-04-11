@@ -3,7 +3,33 @@
 {% block header %}
 {% endblock %}
 {% block name %}
-
+        
+        <div class="form-group">
+		<label>
+			CTF Category:<br>
+			<small class="form-text text-muted">
+				The BOCX CTF level instances
+			</small>
+		</label>
+		<select id="bocx_category" class="form-control" name="ctf_category_id" value="" required>
+		</select>
+		<small class="form-text text-muted">
+			Control CTF  Category level
+		</small>
+	</div>
+        <div class="form-group">
+		<label>
+			Team:<br>
+			<small class="form-text text-muted">
+				The user Team to access the challenge.
+			</small>
+		</label>
+		<select id="team_id" class="form-control" name="team_id" value="" required>
+		</select>
+		<small class="form-text text-muted">
+			Set Challenge Team  Restriction.
+		</small>
+	</div>
 	<div class="form-group">
 		<label>
 			Name:<br>

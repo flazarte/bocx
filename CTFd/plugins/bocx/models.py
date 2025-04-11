@@ -2,6 +2,7 @@ import os
 from CTFd.models import db, Challenges, Flags
 from CTFd.plugins.flags import FlagException, get_flag_class
 from CTFd.plugins.challenges import BaseChallenge
+from pprint import pprint 
 
 class Avatars(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -111,10 +112,8 @@ class CategoryGameClass(BaseChallenge):
         # Create challenge
         data = request.form or request.get_json()
         chal = BOCXCategoryChallenge(
-            #ctf_category_id=data['bocx_category'],
-            ctf_category_id=1,
-            #team_id=data['team_id'],
-            team_id=1,
+            ctf_category_id=data['ctf_category_id'],
+            team_id=data['team_id'],
             name=data['name'],
             #description=data['description'],
             description='',
@@ -128,11 +127,29 @@ class CategoryGameClass(BaseChallenge):
         db.session.commit()
 
         return chal
+
+    @classmethod
+    def read(cls, challenge):
+        """
+        This method is in used to access the data of a challenge in a format processable by the front end.
+
+        :param challenge:
+        :return: Challenge object, data dictionary to be returned to the user
+        """
+        challenge = BOCXCategoryChallenge.query.filter_by(id=challenge.id).first()
+        data = super().read(challenge)
+        data.update(
+            {
+                "ctf_category_id": challenge.ctf_category_id,
+                "team_id": challenge.team_id,
+            }
+        )
+        return data
     
     @classmethod
     def attempt(cls, challenge, request):
         """
-        This method is used to check whether a given input is right or wrong. It does not make any changes and should
+        This method is used to checkwhether a given input is right or wrong. It does not make any changes and should
         return a boolean for correctness and a string to be shown to the user. It is also in charge of parsing the
         user's input from the request itself.
 

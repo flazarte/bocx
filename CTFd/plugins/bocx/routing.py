@@ -13,11 +13,22 @@ from flask import (
 )
 from CTFd.utils.decorators import admins_only
 from CTFd.plugins import bypass_csrf_protection
-from CTFd.plugins.bocx.models  import BOCX_category
-from CTFd.plugins.bocx.utils import  get_category
+from CTFd.plugins.bocx.models  import BOCX_category, BOCXCategoryChallenge, BOCX_selected_cat
+from CTFd.plugins.bocx.utils import  get_category, get_teams
 from werkzeug.utils import secure_filename
 from CTFd.plugins.challenges import CHALLENGE_CLASSES, get_chal_class
-from CTFd.models import Challenges, Flags, Solves
+from CTFd.models import Challenges, Flags, Solves, Teams
+from CTFd.utils.user import is_admin, authed, get_current_user, get_current_team, get_current_user_attrs
+from CTFd.utils.decorators import (
+    authed_only,
+    during_ctf_time_only,
+    require_complete_profile,
+    require_verified_emails,
+)
+from CTFd.utils.decorators.visibility import check_challenge_visibility
+
+
+
 
 app = Flask(__name__, template_folder='templates')
 app.config['UPLOAD_PATH'] = 'CTFd/plugins/bocx/'
@@ -92,6 +103,19 @@ def bocx_category_update_api(bocx_id):
             return jsonify(results)
     return jsonify(results)
 
+#bocx challenge  edit/update
+@bocx.route('/api/v2/challenge-update/<int:challenge_id>', methods=['POST'])
+@admins_only
+@bypass_csrf_protection
+def bocx_challenge_update_api(challenge_id):
+    results=False
+    if request.method == 'POST':
+        ctf_category_id = request.form['ctf_category_id']
+        team_id = request.form['team_id']
+        db.session.query(BOCXCategoryChallenge).filter_by(id = challenge_id).update(dict(ctf_category_id = ctf_category_id, team_id = team_id))
+        results=True
+    return jsonify(results)
+
 #override admin challenges_new
 @admins_only
 def bocx_challenges_new():
@@ -99,6 +123,23 @@ def bocx_challenges_new():
     return render_template("admin/challenges/new.html", types=types, cat=get_category)
 
 
+#get Bocx Teams
+@bocx.route('/api/v2/bocx_teams', methods=['GET'])
+@admins_only
+@bypass_csrf_protection
+def bocx_get_team_api():
+    results = []
+    teams = get_teams()
+    if teams:
+        for x in teams:
+            results.append({
+                'id': x.id,
+                'name': x.name    
+            })
+        return jsonify(results)
+    return jsonify(results)
+
+#get challenge detail
 @admins_only
 def bocx_challenges_detail(challenge_id):
     results = []
@@ -112,6 +153,7 @@ def bocx_challenges_detail(challenge_id):
         .all()
     )
     flags = Flags.query.filter_by(challenge_id=challenge.id).all()
+  
 
     try:
         challenge_class = get_chal_class(challenge.type)
@@ -138,3 +180,83 @@ def bocx_challenges_detail(challenge_id):
         solves=solves,
         flags=flags,
     )
+
+def bocx_challenges_listing():
+    q = request.args.get("q")
+    field = request.args.get("field")
+    filters = []
+
+    if q:
+        # The field exists as an exposed column
+        if Challenges.__mapper__.has_property(field):
+            filters.append(getattr(Challenges, field).like("%{}%".format(q)))
+
+    query = Challenges.query.filter(*filters).order_by(Challenges.id.asc())
+    challenges = query.all()
+    total = query.count()
+    #bocx_cat = db.session.query(BOCXCategoryChallenge).filter_by(id = challenge_id).first()
+
+    return render_template(
+        "admin/challenges/challenges.html",
+        challenges=challenges,
+        total=total,
+        q=q,
+        field=field,
+    )
+
+
+@admins_only
+def get_CTF_name(bocx_id):
+    cat = BOCX_category.query.get(bocx_id)
+    return cat.category if cat else None
+
+@admins_only
+def get_bocx_team_name(team_id):
+    team = Teams.query.get(team_id)
+    return team.name if team else None
+
+
+#OVERIDE CHALLENGES
+@require_complete_profile
+@during_ctf_time_only
+@require_verified_emails
+@check_challenge_visibility
+def bocx_chal_listing():
+    user = get_current_user()
+    cat_exist = db.session.query(BOCX_selected_cat).filter_by(team_id = user.team_id).first()
+    if cat_exist is None:
+        return redirect("ctf-category", code=303)
+    if cat_exist.team_id is None: 
+        return redirect("ctf-category", code=303)
+    if (
+        Configs.challenge_visibility == ChallengeVisibilityTypes.PUBLIC
+        and authed() is False
+    ):
+        pass
+    else:
+        if is_teams_mode() and get_current_team() is None:
+            return redirect(url_for("teams.private", next=request.full_path))
+
+    infos = get_infos()
+    errors = get_errors()
+
+    if Configs.challenge_visibility == ChallengeVisibilityTypes.ADMINS:
+        infos.append("Challenge Visibility is set to Admins Only")
+
+    if ctf_started() is False:
+        errors.append(f"{Configs.ctf_name} has not started yet")
+
+    if ctf_paused() is True:
+        infos.append(f"{Configs.ctf_name} is paused")
+
+    if ctf_ended() is True:
+        infos.append(f"{Configs.ctf_name} has ended")
+
+    return render_template("challenges.html", infos=infos, errors=errors)
+
+
+
+@bocx.route('/ctf-category', methods=['GET', 'POST'])
+@authed_only
+def bocx_view_challenge_category():
+    return render_template('plugins/bocx/templates/ctf-category.html', cat=get_category())

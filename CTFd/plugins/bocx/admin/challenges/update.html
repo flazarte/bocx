@@ -3,16 +3,22 @@
 {% block name %}
 	<div class="form-group">
 		<label for="game_category">BOCX CTF Category</label>
-		<select class="form-control" id= "bocx_ategory" name="bocx_category" value="{{ challenge.bocx_category }}" required>
-		    {% for bocx_cat in cat %}
-                     <option value="{{ bocx_cat.id }}">{{bocx_cat.category }}</option>
-                   {% endfor %}
+		<select class="form-control" id="bocx_category" name="ctf_category_id" value="{{ challenge.ctf_category_id }}" required>
 		</select>
 		<small class="form-text text-muted">
 			Control users CTF Category
 		</small>
 		
 		<br>
+               <label for="team">Team</label>
+                <select class="form-control" id= "team_id" name="team_id" value="{{ challenge.team_id }}" required>
+                </select>
+                <small class="form-text text-muted">
+                        Control challenge team restriction.
+                </small>
+
+                <br>
+
 		<label>
 			Name
 			<small class="form-text text-muted">The name of your challenge</small>
@@ -62,4 +68,8 @@
 	</label>
 	<input type="number" class="form-control chal-value" name="value" value="{{ challenge.value }}">
 </div>
+<script>
+        var CHALLENGE_CTF_CATEGORY = {{ challenge.ctf_category_id }};
+        var CHALLENGE_TEAM_ID = {{ challenge.team_id }};
+</script>
 {% endblock %}

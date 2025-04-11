@@ -1,4 +1,4 @@
-from CTFd.models import db
+from CTFd.models import db, Teams
 from CTFd.plugins.bocx.models import  BOCX_category
 
 
@@ -10,3 +10,10 @@ def get_category():
         return []
     else:
         return db.session.query(BOCX_category).order_by(BOCX_category.id.asc()).all()
+#get team
+def get_teams():
+    ctf_team = Teams.query.filter_by(banned=False, hidden=False).first()
+    if ctf_team is None:
+        return []
+    else:
+        return Teams.query.filter_by(banned=False, hidden=False).all()
