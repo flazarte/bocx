@@ -14,7 +14,7 @@ from flask import (
 from CTFd.utils.decorators import admins_only
 from CTFd.plugins import bypass_csrf_protection
 from CTFd.plugins.bocx.models  import BOCX_category, BOCXCategoryChallenge, BOCX_selected_cat
-from CTFd.plugins.bocx.utils import  get_category, get_teams
+from CTFd.plugins.bocx.utils import  get_category, get_teams, get_challenges
 from werkzeug.utils import secure_filename
 from CTFd.plugins.challenges import CHALLENGE_CLASSES, get_chal_class
 from CTFd.models import Challenges, Flags, Solves, Teams
@@ -26,8 +26,10 @@ from CTFd.utils.decorators import (
     require_verified_emails,
 )
 from CTFd.utils.decorators.visibility import check_challenge_visibility
-
-
+from CTFd.constants.config import ChallengeVisibilityTypes, Configs
+from CTFd.utils.helpers import get_errors, get_infos
+from CTFd.utils.dates import ctf_ended, ctf_paused, ctf_started
+from CTFd.utils.config import is_teams_mode
 
 
 app = Flask(__name__, template_folder='templates')
@@ -90,17 +92,28 @@ def bocx_category_update_api(bocx_id):
 
     #fetch data
     if request.method == 'GET':
-        cat_exist = db.session.query(BOCX_category).order_by(BOCX_category.id.asc()).all()
-        if cat_exist:
-            for cat in cat_exist:
-                results.append({
-                    'id': cat.id,
-                    'category': cat.category,
-                    'description': cat.description,
-                    'image_name': cat.image_name,
-                    'location': cat.location    
-                })
-            return jsonify(results)
+        if bocx_id > 0:
+           cat = db.session.query(BOCX_category).filter_by(id = bocx_id).first()
+           results.append({
+               'id': cat.id,
+               'category': cat.category,
+               'description': cat.description,
+               'image_name': cat.image_name,
+               'location': cat.location    
+            })
+           return jsonify(results)
+        else:
+           cat_exist = db.session.query(BOCX_category).order_by(BOCX_category.id.asc()).all()
+           if cat_exist:
+              for cat in cat_exist:
+                   results.append({
+                       'id': cat.id,
+                       'category': cat.category,
+                       'description': cat.description,
+                       'image_name': cat.image_name,
+                       'location': cat.location    
+                   })
+              return jsonify(results)
     return jsonify(results)
 
 #bocx challenge  edit/update
@@ -234,7 +247,7 @@ def bocx_chal_listing():
     ):
         pass
     else:
-        if is_teams_mode() and get_current_team() is None:
+        if is_teams_mode() and  get_current_team() is None:
             return redirect(url_for("teams.private", next=request.full_path))
 
     infos = get_infos()
@@ -256,7 +269,44 @@ def bocx_chal_listing():
 
 
 
-@bocx.route('/ctf-category', methods=['GET', 'POST'])
+@bocx.route('/ctf-category',methods=['GET'])
 @authed_only
 def bocx_view_challenge_category():
-    return render_template('plugins/bocx/templates/ctf-category.html', cat=get_category())
+    user = get_current_user()
+    cat_exist = db.session.query(BOCX_selected_cat).filter_by(team_id = user.team_id).first()
+    if not authed():
+        return redirect(url_for('auth.login', next=request.path))
+    if get_current_team() is None:
+        return redirect(url_for("teams.private", next=request.full_path))
+    if request.method == 'POST':
+        if cat_exist is None:
+           db.session.merge(BOCX_selected_cat(ctf_category_id = cat_id, team_id = user.team_id))
+        else:
+           db.session.query(BOCX_selected_cat).filter_by(team_id = user.team_id).update(dict(ctf_category_id = cat_id))
+        db.session.commit()
+        return redirect(url_for('challenges.listing'))
+    return render_template('plugins/bocx/templates/ctf-category.html', results=get_challenges(), cat=get_category())
+
+
+@bocx.route('/api/v2/ctf-category/<int:cat_id>', methods=['POST', 'GET'])
+@authed_only
+@bypass_csrf_protection
+def bocx_view_challenge_category_api(cat_id):
+    results=[]
+    user = get_current_user()
+    cat_exist = db.session.query(BOCX_selected_cat).filter_by(team_id = user.team_id).first()
+    if not authed():
+        return redirect(url_for('auth.login', next=request.path))
+    if get_current_team() is None:
+        return redirect(url_for("teams.private", next=request.full_path))
+    if request.method == 'POST':
+        if cat_exist is None:
+           db.session.merge(BOCX_selected_cat(ctf_category_id = cat_id, team_id = user.team_id))
+        else:
+           db.session.query(BOCX_selected_cat).filter_by(team_id = user.team_id).update(dict(ctf_category_id = cat_id))
+        db.session.commit()
+        results.append({
+                    'success': True
+                })
+       # return redirect(url_for('challenges.listing'))
+    return jsonify(results)

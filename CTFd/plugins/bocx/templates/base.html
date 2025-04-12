@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>PICT - CTF</title>
+
+    <link rel="stylesheet" href="{{url_for('bocx.static', filename='templates/assets/css/all.css')}}">
+    
+    <link rel="stylesheet" href="{{url_for('bocx.static', filename='templates/assets/css/bootstrap4-neon-glow.min.css')}}">
+    <link rel="stylesheet" href="{{url_for('bocx.static', filename='templates/assets/css/main.css')}}">
+    <link rel="stylesheet" href="{{url_for('bocx.static', filename='templates/assets/css/particles.css')}}">
+    
+    <link href="{{url_for('bocx.static', filename='templates/assets/css/roboto.css')}}" rel="stylesheet">
+    <link rel="stylesheet" href="{{url_for('bocx.static', filename='templates/assets/css/hack.min.css')}}">
+   {% block stylesheets %}
+   {% endblock %}
+   {{ Plugins.styles }}
+	<script type="text/javascript">
+		var init = {
+			'urlRoot': "{{ request.script_root }}",
+			'csrfNonce': "{{ Session.nonce }}",
+			'userMode': "{{ Configs.user_mode }}",
+			'userId': {{ Session.id }},
+			'start': {{ Configs.start | tojson }},
+			'end': {{ Configs.end | tojson }},
+			'theme_settings': {{ Configs.theme_settings | tojson }}
+		}
+	</script>
+	{{ Configs.theme_header }}
+    
+  </head>
+  <body>
+
+  <div id="particles-js"></div>
+    <div class="navbar-dark text-white">
+      <div class="container">
+        <nav class="navbar px-0 navbar-expand-lg navbar-dark">
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav">
+              <a href="index.html" class="pl-md-0 p-3 text-light">Home</a>
+              <a href="login.html" class="p-3 text-decoration-none text-light">Login</a>
+              <a href="registration.html" class="p-3 text-decoration-none text-light active">Register</a>
+            </div>
+          </div>
+        </nav>
+  
+      </div>
+    </div>
+    {% block content %}
+    {% endblock %}
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+
+    <script src="{{url_for('bocx.static', filename='templates/assets/js/jquery-3.3.1.slim.min.js')}}"></script>
+    <script src="{{url_for('bocx.static', filename='templates/assets/js/popper.min.js')}}"></script>
+    <script src="{{url_for('bocx.static', filename='templates/assets/js/bootstrap.min.js')}}"></script>
+
+    <script src="{{url_for('bocx.static', filename='templates/assets/js/particles.js')}}"></script>
+    <script src="{{url_for('bocx.static', filename='templates/assets/js/app.js')}}"></script>
+    <script type="text/javascript" src="{{url_for('bocx.static', filename='js/custom.js', d='09101992')}}"></script>
+    {% block scripts %}
+    {% endblock %}
+
+    {{ Plugins.scripts }}
+    {{ Configs.theme_footer }}
+  </body>
+</html>

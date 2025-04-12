@@ -13,7 +13,7 @@ $(document).ready(function () {
     $('input[name="bocx_category"]:checked').each(function () {
       if (this.value) {
         var chal = $.getJSON("/api/v2/challenge-category/" + this.value, function (data) {
-          $.each(data, function (index, item) {
+          $.each(data, function (index, item) { console.log(item);
             $(".modal.bocx_update .modal-body form").attr('action', '/api/v2/challenge-category/' + item.id);
             $(".modal.bocx_update .modal-body input#challenge-bocx-category-name").val(item.category);
             $(".modal.bocx_update .modal-body textarea#challenge-bocx-category-description").val(item.description);
@@ -64,5 +64,38 @@ $(document).ready(function () {
       }
     }
   });
+    
+
+   //open bocx ctf category
+   $(".unlock-category-link").on("click", function(event) {
+     event.preventDefault();
+      var categoryId = $(this).data("value");
+      if (categoryId) {
+        $.ajax({
+          url: "/api/v2/ctf-category/" + categoryId,
+          dataType: 'json',
+          cache: false,
+          contentType: false,
+          processData: false,
+          data: categoryId,
+          type: 'post',
+          success: function (response) {
+            //process response data
+            $.each(response, function (key, data) {
+             //if succeess
+              if(data.success){
+                 window.location.href = "/challenges";
+             }
+            });
+          },
+          error: function (response) {
+            // location.reload();
+            console.log("errror:", response);
+          }
+        });
+      }
+  });
+
+
 	
 });

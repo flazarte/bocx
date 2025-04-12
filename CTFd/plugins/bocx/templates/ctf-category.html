@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block stylesheets %}
+<link rel="stylesheet" href="{{url_for('bocx.static', filename='templates/assets/css/main.css')}}">
+<link rel="stylesheet" href="{{url_for('bocx.static', filename='templates/assets/css/particles.css')}}">
+{% endblock %}
+
+
+{% block content %}>
+<div class="jumbotron bg-transparent mb-0 radius-0">
+ <div class="container py-5">
+     <h1 class="display-3" style="text-align: center">EXERCISE CATEGORY<span class="vim-caret">͏͏&nbsp;</span></h1>
+     <div class="lead mb-3 text-mono text-success" style="text-align: center">Let's demonstrate that a computer genius with a laptop is a fun-loving spark of brilliance, breaking the mold of the stereotypical nerd. Dive into our CTF and expand your expertise in computer skills!
+     </div>
+ </div>
+    <div class="row justify-content-center" style="text-align: center">
+    {% for bocx_cat in cat %}
+    <div class="col">
+                 {% if bocx_cat.location  %}
+                  <img src="{{script_root}}{{bocx_cat.location }}" alt="{{ bocx_cat.image_name }}" style="width: 400px;">
+                 {% else %}
+                  <img src="{{url_for('bocx.static', filename='templates/assets/img/sample_placeholder.png')}}" alt="">
+                 {% endif %}
+                 <div class="text-darkgrey text-mono my-2">{{ bocx_cat.category }}</div>
+                <div class="text-mono">
+                <a href="#"
+                  id="unlock-category"
+                  data-value="{{ bocx_cat.id }}"
+                  title="Open Category"
+                  class="btn btn-success btn-shadow px-3 my-2 ml-0 text-left unlock-category-link">
+                  Open 
+                </a>
+                <a href="#" disable
+                  class="btn btn-danger btn-shadow px-3 my-2 ml-0 ml-sm-1 text-left">
+                  Closed
+                </a>
+              </div>
+              </div>
+     {% endfor %}  
+      </div>
+   </div>
+</div>  
+{% endblock %}
+
+
+{% block scripts %}
+<script src="{{url_for('bocx.static', filename='templates/assets/js/popper.min.js')}}"></script>
+<script src="{{url_for('bocx.static', filename='templates/assets/js/bootstrap.min.js')}}"></script>
+<script src="{{url_for('bocx.static', filename='templates/assets/js/particles.js')}}"></script>
+<script src="{{url_for('bocx.static', filename='templates/assets/js/app.js')}}"></script>
+{% endblock %}
