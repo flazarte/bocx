@@ -5,7 +5,7 @@ from CTFd.plugins.flags import FlagException, get_flag_class
 from CTFd.plugins.challenges import BaseChallenge
 from CTFd.plugins import override_template, register_plugin_assets_directory
 from CTFd.plugins.challenges import CHALLENGE_CLASSES
-from CTFd.plugins.bocx.routing import bocx, bocx_view_challenge_category_api, bocx_view_challenge_category, bocx_chal_listing, get_CTF_name, get_bocx_team_name, bocx_challenges_listing, bocx_setting, bocx_category_update_api, bocx_challenges_new, bocx_challenges_detail, bocx_get_team_api, bocx_challenge_update_api 
+from CTFd.plugins.bocx.routing import bocx, bocx_static_html, bocx_view_challenge_category_api, bocx_view_challenge_category, bocx_chal_listing, get_CTF_name, get_bocx_team_name, bocx_challenges_listing, bocx_setting, bocx_category_update_api, bocx_challenges_new, bocx_challenges_detail, bocx_get_team_api, bocx_challenge_update_api 
 from CTFd.plugins.bocx.models import CategoryGameClass
 
 
@@ -46,6 +46,7 @@ def load(app):
     app.view_functions['admin.challenges_detail'] = bocx_challenges_detail
     app.view_functions['admin.challenges_listing'] = bocx_challenges_listing
     app.view_functions['challenges.listing'] =  bocx_chal_listing
+    app.view_functions['views.static_html'] = bocx_static_html
     #jinja
     app.jinja_env.filters['get_CTF_name'] = get_CTF_name
     app.jinja_env.filters['get_bocx_team_name'] = get_bocx_team_name

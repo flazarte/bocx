@@ -19,6 +19,7 @@ import string
 import random
 from sqlalchemy.orm import aliased
 import json
+from pprint import pprint 
 
 
 #get BOCX CTF Category
@@ -37,6 +38,23 @@ def get_teams():
         return Teams.query.filter_by(banned=False, hidden=False).all()
 
 
+#get challenges by mode user | team
+def bocx_challenge():
+    chals = ''
+    user = get_current_user()
+    #prepare team selected category
+    selected = aliased(BOCX_selected_cat)
+    #chals = BOCXCategoryChallenge.query.join(selected,(selected.team_id == user.team_id)
+     #       ).filter(BOCXCategoryChallenge.state != 'hidden'
+     #       ).filter(BOCXCategoryChallenge.ctf_category_id == selected.ctf_category_id).order_by(BOCXCategoryChallenge.value.asc()).all()
+    
+    chals = BOCXCategoryChallenge.query.filter(
+            or_(BOCXCategoryChallenge.state != 'hidden',BOCXCategoryChallenge.state is None),
+            BOCXCategoryChallenge.team_id == user.team_id,
+            BOCXCategoryChallenge.ctf_category_id == selected.ctf_category_id).all()
+    return chals
+
+
 
 #ovveride load chalenges under challenge listing
 def get_challenges():
@@ -51,47 +69,50 @@ def get_challenges():
         #sort out result
         jchals = []
         results = []
-        for x in chals:
-            prereq = []
-            if x.requirements is None:
-                req = x.requirements
-            else:
+        chals = bocx_challenge()
+        if chals: 
+           return chals
+        #for x in chals:
+         #   prereq = []
+          #  if x.requirements is None:
+           #     req = x.requirements
+           # else:
                 # req = json.loads( x.requirements )
-                req = json.dumps( x.requirements )
-                req = json.loads(req)
-                for reqs in req['prerequisites']:
-                    if reqs:
-                        val = int(reqs)
-                        prereq.append({
-                            'id':val
-                        })
-            jchals.append({
-                'id': x.id,
-                'name': x.name,
-                'value': x.value,
-                'category': x.category,
-                'description': x.description,
-                'requirements': prereq,
-                'category_image': '',
-                "category_desc": ''
-            })
+            #    req = json.dumps( x.requirements )
+             #   req = json.loads(req)
+              #  for reqs in req['prerequisites']:
+               #     if reqs:
+                #        val = int(reqs)
+                 #       prereq.append({
+                  #          'id':val
+                   #     })
+          #  jchals.append({
+           #     'id': x.id,
+            #    'name': x.name,
+             #   'value': x.value,
+              #  'category': x.category,
+              #  'description': x.description,
+              #  'requirements': prereq,
+              #  'category_image': '',
+              #  "category_desc": ''
+          #  })
         # Sort into groups
-        xxcat = []
-        categories = set(map(lambda x: x['category'], jchals))
-        for xcat in categories:
-            exist = db.session.query(BOCXCategoryChallenge).filter_by(category_name=xcat).first()
-            if exist:
-                xx = vars(exist)
-                xxcat.append({
-                'name': xcat,
-                'desc': xx['description'],
-                'image_name': xx['image_name'],
-                'loc': xx['location']
-                })
-        jchals = [j for c in xxcat for j in jchals if j['category'] == c['name']]
-        results.append({
-            'categories': xxcat,
-            'challenges': jchals
-        })
-        return results
+     #   xxcat = []
+      #  categories = set(map(lambda x: x['category'], jchals))
+      #  for xcat in categories:
+       #     exist = db.session.query(BOCXCategoryChallenge).filter_by(category=xcat).first()
+        #    if exist:
+         #       xx = vars(exist)
+          #      xxcat.append({
+           #     'name': xcat,
+            #    'desc': xx['description'],
+             #   'image_name': xx['image_name'],
+              #  'loc': xx['location']
+              #  })
+      #  jchals = [j for c in xxcat for j in jchals if j['category'] == c['name']]
+      #  results.append({
+       #     'categories': xxcat,
+        #    'challenges': jchals
+       # })
+       # return results
     return []

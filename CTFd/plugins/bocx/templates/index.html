@@ -1,102 +1,151 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>PICT - CTF</title>
+{% extends "base.html" %}
+{% block stylesheets %}
+<link href="{{url_for('bocx.static', filename='templates/assets/css/flipclock.css')}}" rel="stylesheet">
+<link rel="stylesheet" href="{{url_for('bocx.static', filename='templates/assets/css/main.css')}}">
+<link rel="stylesheet" href="{{url_for('bocx.static', filename='templates/assets/css/particles.css')}}">
+<style>
+        body {
+            background-color: #000; /* Dark background for neon effect */
+            color: #fff;
+            font-family: sans-serif;
+            margin: 0;
+            padding-bottom: 50px; /* Add some padding at the bottom */
+        }
 
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
-    
-    <link rel="stylesheet" href="assets/css/bootstrap4-neon-glow.min.css">
-    <link rel="stylesheet" href="assets/css/main.css">
-    <link rel="stylesheet" href="assets/css/particles.css">
-    
-    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
-    <link rel='stylesheet' href='https://cdn.jsdelivr.net/font-hack/2.020/css/hack.min.css'>
-    
-  </head>
-  <body>
+        .neon-title {
+            color: #fff;
+            text-shadow: 0 0 5px #0ff, 0 0 10px #0ff, 0 0 15px #0ff, 0 0 20px #0ff;
+        }
 
-  <div id="particles-js"></div>
-    <div class="navbar-dark text-white">
-      <div class="container">
-        <nav class="navbar px-0 navbar-expand-lg navbar-dark">
-          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-            <div class="navbar-nav">
-              <a href="index.html" class="pl-md-0 p-3 text-light">Home</a>
-              <a href="login.html" class="p-3 text-decoration-none text-light">Login</a>
-              <a href="registration.html" class="p-3 text-decoration-none text-light active">Register</a>
-            </div>
-          </div>
-        </nav>
-  
-      </div>
+        .countdown-container {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            max-width: 200px; /* Adjust as needed */
+            height: auto;
+            margin: 10px;
+        }
+
+        .flag-container {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .flag {
+            width: 50px;
+            height: auto;
+            margin: 5px;
+            border: 1px solid #333;
+            box-shadow: 0 0 5px #0ff;
+        }
+
+        .centered-flags {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px; /* Space between flags */
+            margin-bottom: 20px;
+        }
+
+        .centered-flags .center-asian {
+            /* Add a more prominent style for the centered Asian flags */
+            width: 70px;
+            height: auto;
+            border: 2px solid #0f0; /* Highlight border */
+            box-shadow: 0 0 10px #0f0;
+        }
+
+        .participating-text {
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: #eee;
+        }
+    </style>
+{% endblock %}
+
+
+{% block content %}
+<div class="container text-center my-5">
+        <h1 class="neon-title">CAPTURE THE FLAG</h1>
+        <p class="lead neon-title">Powered by:</p>
+        <div class="logo-container">
+            <img src="{{url_for('bocx.static', filename='templates/assets/img/asia_world_red.webp')}}" alt="Asian WorldSkills" class="logo">
+            <img src="{{url_for('bocx.static', filename='templates/assets/img/tesda.png')}}" alt="TESDA" class="logo">
+            <img src="{{url_for('bocx.static', filename='templates/assets/img/bocx.jpeg')}}" alt="BOCX" class="logo">
+        </div>
+        <p class="lead neon-title">Get Ready for the Ultimate Cyber Security Challenge!</p>
+
+        <div class="countdown-container">
+            <h2>Countdown Timer</h2>
+            <div class="countdown-timer" style="zoom: 2.25;"></div>
+        </div>
+
+        <div class="flag-container">
+            <h2>Participating Countries</h2>
+            <p class="participating-text">Representing nations from Southeast Asia:</p>
+            <div class="centered-flags">
+                <img src="{{url_for('bocx.static', filename='templates/assets/img/singapore.webp')}}" alt="Singapore" class="flag center-asian">
+                <img src="{{url_for('bocx.static', filename='templates/assets/img/indonesia.webp')}}" alt="Indonesia" class="flag center-asian">
+                <img src="{{url_for('bocx.static', filename='templates/assets/img/brunei.webp')}}" alt="Brunei" class="flag center-asian">
+                <img src="{{url_for('bocx.static', filename='templates/assets/img/malaysia.webp')}}" alt="Malaysia" class="flag center-asian">
+                <img src="{{url_for('bocx.static', filename='templates/assets/img/philippines.webp')}}" alt="Philippines" class="flag center-asian">
+                <img src="{{url_for('bocx.static', filename='templates/assets/img/thailand.webp')}}" alt="Thailand" class="flag center-asian">
+                <img src="{{url_for('bocx.static', filename='templates/assets/img/myanmar.webp')}}" alt="Myanmar" class="flag center-asian">
+                </div>
+        </div>
     </div>
-    <div class="jumbotron bg-transparent mb-0 radius-0">
-      <div class="container">
-          <div class="row">
-            <div class="col-xl-6">
-              <h1 class="display-3">CAPTURE THE FLAG<span class="vim-caret">͏͏&nbsp;</span></h1>
-              <div class="lead mb-3 text-mono text-success">Welcome hackers! Prove the world that a computer genius with a laptop is not a nerd sitting in the corner of a untidy room but a fun loving work of brilliance!
-                Join our CTF and expand your knowledge about computer forensics.
-              </div>
-              <div class="text-mono">
-                <a href="login.html"
-                  title="Download Theme"
-                  class="btn btn-success btn-shadow px-3 my-2 ml-0 text-left">
-                  Login
-                </a>
-                <a href="registration.html"
-                  class="btn btn-danger btn-shadow px-3 my-2 ml-0 ml-sm-1 text-left">
-                  Register
-                </a>
-              </div>
+{% endblock %}
 
-              <div class="text-darkgrey text-mono my-2">We won't steal you passwords :)</div>
+{% block scripts %}
+<script src="{{url_for('bocx.static', filename='templates/assets/js/jquery-3.3.1.slim.min.js')}}"></script>
+<script src="{{url_for('bocx.static', filename='templates/assets/js/popper.min.js')}}"></script>
+<script src="{{url_for('bocx.static', filename='templates/assets/js/flipclock.min.js')}}"></script>
+<script src="{{url_for('bocx.static', filename='templates/assets/js/bootstrap.min.js')}}"></script>
+<script src="{{url_for('bocx.static', filename='templates/assets/js/particles.js')}}"></script>
+<script src="{{url_for('bocx.static', filename='templates/assets/js/app.js')}}"></script>
+<script>
+   // const navbar = document.querySelector('.ht-tm-navbar');
+   // if (navbar) {
+    //    navbar.remove();
+   // }
 
-              <p class="mt-5 text-grey text-spacey">
-                PICT CTF ( Capture The Flag ) is a hacker themed CTF.<br>
-                Think.<br>
-                Capture.<br>
-                Proceed.<br>
-              </p>
-            </div>
-            <div class="col-xl-6">
-              <img class="canvas_img" src="assets/img/canvas.png" alt="">
-            </div>
-          </div>
-          <div class="container py-5">
-            <h1>Let the Hacking BEGIN</h1>
-          </div>
+    const START = new Date(init.start * 1000);
+    const END = new Date(init.end * 1000);
+    const NOW = new Date(); // Get the current time
 
-          <div class="footer">
-            <div class="row justify-content-center" style="text-align: center">
-              <div class="col">
-                <img src="assets/img/sample_placeholder.png" alt="">
-              </div>
-              <div class="col">
-                <img src="assets/img/sample_placeholder.png" alt="">
-              </div>
-            </div>
-            <div style="text-align: center">
-              &copy; 2019 PICT INC.
-            </div>
-          </div>
-      </div>
-    </div>
+    // Calculate the initial countdown value in seconds
+    let timeDifferenceSeconds = Math.max(0, Math.floor((END - NOW) / 1000));
 
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    var clock = new FlipClock($('.countdown-timer'), timeDifferenceSeconds, {
+        countdown: true,
+        onEnd: function() {
+            console.log("Countdown finished!");
+            // You can add actions to perform when the countdown ends here
+        }
+    });
 
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+    // The following part seems to be for displaying the start and end times,
+    // it doesn't directly control the FlipClock countdown.
+    const countdown_disp = document.getElementById(".countdown-container");
+    const disp = {
+        hour: countdown_disp.querySelector(".hour"),
+        minute: countdown_disp.querySelector(".minute"),
+        second: countdown_disp.querySelector(".second"),
+    }
 
-    <script src="assets/js/particles.js"></script>
-    <script src="assets/js/app.js"></script>
-  </body>
-</html>
+    const ctk_time = document.getElementById("ctk-time");
+    const time = {
+        start: ctk_time.querySelector(".start"),
+        end: ctk_time.querySelector(".end"),
+    }
+    time.start.textContent = START.toDateString();
+    time.end.textContent = END.toDateString();
+</script>
+{% endblock %}

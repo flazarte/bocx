@@ -30,7 +30,8 @@ from CTFd.constants.config import ChallengeVisibilityTypes, Configs
 from CTFd.utils.helpers import get_errors, get_infos
 from CTFd.utils.dates import ctf_ended, ctf_paused, ctf_started
 from CTFd.utils.config import is_teams_mode
-
+from CTFd.utils.config.pages import build_markdown, get_page
+from pprint import pprint 
 
 app = Flask(__name__, template_folder='templates')
 app.config['UPLOAD_PATH'] = 'CTFd/plugins/bocx/'
@@ -235,6 +236,7 @@ def get_bocx_team_name(team_id):
 @require_verified_emails
 @check_challenge_visibility
 def bocx_chal_listing():
+    #pprint(get_challenges())
     user = get_current_user()
     cat_exist = db.session.query(BOCX_selected_cat).filter_by(team_id = user.team_id).first()
     if cat_exist is None:
@@ -265,7 +267,7 @@ def bocx_chal_listing():
     if ctf_ended() is True:
         infos.append(f"{Configs.ctf_name} has ended")
 
-    return render_template("challenges.html", infos=infos, errors=errors)
+    return render_template("challenges.html", results = get_challenges(), infos=infos, errors=errors)
 
 
 
@@ -285,7 +287,7 @@ def bocx_view_challenge_category():
            db.session.query(BOCX_selected_cat).filter_by(team_id = user.team_id).update(dict(ctf_category_id = cat_id))
         db.session.commit()
         return redirect(url_for('challenges.listing'))
-    return render_template('plugins/bocx/templates/ctf-category.html', results=get_challenges(), cat=get_category())
+    return render_template('plugins/bocx/templates/ctf-category.html',cat=get_category())
 
 
 @bocx.route('/api/v2/ctf-category/<int:cat_id>', methods=['POST', 'GET'])
@@ -310,3 +312,21 @@ def bocx_view_challenge_category_api(cat_id):
                 })
        # return redirect(url_for('challenges.listing'))
     return jsonify(results)
+
+#new index home pagee
+@bocx.route("/", defaults={"route": "index"})
+@bocx.route("/<path:route>")
+def bocx_static_html(route):
+    """
+    Route in charge of routing users to Pages.
+    :param route:
+    :return:
+    """
+    page = get_page(route)
+    if page is None:
+        abort(404)
+    else:
+        if page.auth_required and authed() is False:
+            return redirect(url_for("auth.login", next=request.full_path))
+
+        return render_template("plugins/bocx/templates/index.html", content=page.html, title=page.title)
