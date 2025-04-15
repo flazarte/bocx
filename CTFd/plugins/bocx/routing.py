@@ -13,8 +13,8 @@ from flask import (
 )
 from CTFd.utils.decorators import admins_only
 from CTFd.plugins import bypass_csrf_protection
-from CTFd.plugins.bocx.models  import BOCX_category, BOCXCategoryChallenge, BOCX_selected_cat
-from CTFd.plugins.bocx.utils import  get_category, get_teams, get_challenges
+from CTFd.plugins.bocx.models  import BOCX_category, BOCX_lockout, BOCXCategoryChallenge, BOCX_selected_cat
+from CTFd.plugins.bocx.utils import  get_category, get_lockout, get_teams, get_challenges
 from werkzeug.utils import secure_filename
 from CTFd.plugins.challenges import CHALLENGE_CLASSES, get_chal_class
 from CTFd.models import Challenges, Flags, Solves, Teams
@@ -25,12 +25,13 @@ from CTFd.utils.decorators import (
     require_complete_profile,
     require_verified_emails,
 )
-from CTFd.utils.decorators.visibility import check_challenge_visibility
+from CTFd.utils.decorators.visibility import check_challenge_visibility, check_account_visibility, check_score_visibility
 from CTFd.constants.config import ChallengeVisibilityTypes, Configs
 from CTFd.utils.helpers import get_errors, get_infos
 from CTFd.utils.dates import ctf_ended, ctf_paused, ctf_started
 from CTFd.utils.config import is_teams_mode
 from CTFd.utils.config.pages import build_markdown, get_page
+from CTFd.utils.decorators.modes import require_team_mode
 from pprint import pprint 
 
 app = Flask(__name__, template_folder='templates')
@@ -48,7 +49,7 @@ ALLOWED_EXTENSIONS = set(['pdf'])
 @bocx.route('/admin/bocx_settings', methods=['GET'])
 @admins_only
 def bocx_setting():
-    return render_template("plugins/bocx/admin/settings/settings.html",cat=get_category())
+    return render_template("plugins/bocx/admin/settings/settings.html",cat=get_category(), lockout=get_lockout())
 
 #bocx category edit/update/add
 @bocx.route('/api/v2/challenge-category/<int:bocx_id>', methods=['GET','POST','DELETE'])
@@ -79,6 +80,13 @@ def bocx_category_update_api(bocx_id):
                         db.session.merge(BOCX_category(category = cat_name, description = cat_desc))
                     else:
                         db.session.query(BOCX_category).filter_by(id = bocx_id).update(dict(category = cat_name, description = cat_desc))
+                lockout = request.form['lockout']
+                if lockout:
+                   lock_exist = db.session.query(BOCX_lockout).filter_by(ctf_category_id  = bocx_id).first()
+                   if lock_exist is None:
+                        db.session.merge(BOCX_lockout(lockout_percentage = lockout, ctf_category_id  = bocx_id))
+                   else:
+                        db.session.query(BOCX_lockout).filter_by(ctf_category_id  = bocx_id).update(dict(lockout_percentage = lockout))
         db.session.commit()
         return redirect(request.referrer)
         
@@ -272,6 +280,7 @@ def bocx_chal_listing():
 
 
 @bocx.route('/ctf-category',methods=['GET'])
+@require_team_mode
 @authed_only
 def bocx_view_challenge_category():
     user = get_current_user()
@@ -330,3 +339,84 @@ def bocx_static_html(route):
             return redirect(url_for("auth.login", next=request.full_path))
 
         return render_template("plugins/bocx/templates/index.html", content=page.html, title=page.title)
+
+
+
+
+@check_account_visibility
+@admins_only
+def new_users_listing():
+    q = request.args.get("q")
+    field = request.args.get("field", "name")
+    if field not in ("name", "affiliation", "website"):
+        field = "name"
+
+    filters = []
+    if q:
+        filters.append(getattr(Users, field).like("%{}%".format(q)))
+
+    users = (
+        Users.query.filter_by(banned=False, hidden=False)
+        .filter(*filters)
+        .order_by(Users.id.asc())
+        .paginate(per_page=50, error_out=False)
+    )
+
+    args = dict(request.args)
+    args.pop("page", 1)
+
+    return render_template(
+        "users/users.html",
+        users=users,
+        prev_page=url_for(request.endpoint, page=users.prev_num, **args),
+        next_page=url_for(request.endpoint, page=users.next_num, **args),
+        q=q,
+        field=field,
+    )
+
+@check_account_visibility
+@check_score_visibility
+@admins_only
+def new_public(user_id):
+    infos = get_infos()
+    errors = get_errors()
+    user = Users.query.filter_by(id=user_id, banned=False, hidden=False).first_or_404()
+
+    if config.is_scoreboard_frozen():
+        infos.append("Scoreboard has been frozen")
+
+    return render_template(
+        "users/public.html", user=user, account=user.account, infos=infos, errors=errors
+    )
+
+@check_account_visibility
+@check_score_visibility
+@require_team_mode
+@admins_only
+def new_team_public(team_id):
+    infos = get_infos()
+    errors = get_errors()
+    team = Teams.query.filter_by(id=team_id, banned=False, hidden=False).first_or_404()
+    solves = team.get_solves()
+    awards = team.get_awards()
+
+    place = team.place
+    score = team.score
+
+    if errors:
+        return render_template("teams/public.html", team=team, errors=errors)
+
+    if config.is_scoreboard_frozen():
+        infos.append("Scoreboard has been frozen")
+
+    return render_template(
+        "teams/public.html",
+        solves=solves,
+        awards=awards,
+        team=team,
+        score=score,
+        place=place,
+        score_frozen=config.is_scoreboard_frozen(),
+        infos=infos,
+        errors=errors,
+    )

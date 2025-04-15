@@ -1,4 +1,4 @@
-from CTFd.plugins.bocx.models import  BOCX_category, BOCXCategoryChallenge, BOCX_selected_cat
+from CTFd.plugins.bocx.models import  BOCX_category, BOCX_lockout, BOCXCategoryChallenge, BOCX_selected_cat
 from statistics import mode
 from sqlalchemy.sql.expression import asc
 from CTFd.models import Teams, db, Challenges, Awards, Solves, Users, Submissions
@@ -29,6 +29,15 @@ def get_category():
         return []
     else:
         return db.session.query(BOCX_category).order_by(BOCX_category.id.asc()).all()
+
+#BOCX CATEGORY LOCKOUT
+def get_lockout():
+    ctf_cat = db.session.query(BOCX_lockout).first()
+    if ctf_cat is None:
+        return []
+    else:
+        return db.session.query(BOCX_lockout).order_by(BOCX_lockout.id.asc()).all()
+
 #get team
 def get_teams():
     ctf_team = Teams.query.filter_by(banned=False, hidden=False).first()

@@ -76,9 +76,9 @@
         <h1 class="neon-title">CAPTURE THE FLAG</h1>
         <p class="lead neon-title">Powered by:</p>
         <div class="logo-container">
-            <img src="{{url_for('bocx.static', filename='templates/assets/img/asia_world_red.webp')}}" alt="Asian WorldSkills" class="logo">
-            <img src="{{url_for('bocx.static', filename='templates/assets/img/tesda.png')}}" alt="TESDA" class="logo">
-            <img src="{{url_for('bocx.static', filename='templates/assets/img/bocx.jpeg')}}" alt="BOCX" class="logo">
+            <img src="{{url_for('bocx.static', filename='templates/assets/img/tesda.png')}}" alt="Asian WorldSkills" class="logo">
+            <img src="{{url_for('bocx.static', filename='templates/assets/img/asia_world_red.webp')}}" alt="TESDA" class="logo">
+            <img src="{{url_for('bocx.static', filename='templates/assets/img/bocx-logo.png')}}" alt="BOCX" class="logo">
         </div>
         <p class="lead neon-title">Get Ready for the Ultimate Cyber Security Challenge!</p>
 
@@ -135,9 +135,9 @@
     // it doesn't directly control the FlipClock countdown.
     const countdown_disp = document.getElementById(".countdown-container");
     const disp = {
-        hour: countdown_disp.querySelector(".hour"),
-        minute: countdown_disp.querySelector(".minute"),
-        second: countdown_disp.querySelector(".second"),
+        hour: countdown_disp.querySelector(".hours"),
+        minute: countdown_disp.querySelector(".minutes"),
+        second: countdown_disp.querySelector(".seconds"),
     }
 
     const ctk_time = document.getElementById("ctk-time");

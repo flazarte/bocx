@@ -5,7 +5,7 @@ from CTFd.plugins.flags import FlagException, get_flag_class
 from CTFd.plugins.challenges import BaseChallenge
 from CTFd.plugins import override_template, register_plugin_assets_directory
 from CTFd.plugins.challenges import CHALLENGE_CLASSES
-from CTFd.plugins.bocx.routing import bocx, bocx_static_html, bocx_view_challenge_category_api, bocx_view_challenge_category, bocx_chal_listing, get_CTF_name, get_bocx_team_name, bocx_challenges_listing, bocx_setting, bocx_category_update_api, bocx_challenges_new, bocx_challenges_detail, bocx_get_team_api, bocx_challenge_update_api 
+from CTFd.plugins.bocx.routing import bocx, new_team_public, new_public, new_users_listing, bocx_static_html, bocx_view_challenge_category_api, bocx_view_challenge_category, bocx_chal_listing, get_CTF_name, get_bocx_team_name, bocx_challenges_listing, bocx_setting, bocx_category_update_api, bocx_challenges_new, bocx_challenges_detail, bocx_get_team_api, bocx_challenge_update_api 
 from CTFd.plugins.bocx.models import CategoryGameClass
 
 
@@ -29,8 +29,8 @@ def load(app):
     #admin_base
     new_base = os.path.join(dir_path, 'templates/neon-base.html')
     override_template('base.html', open(new_base).read())
-    #admin_base = os.path.join(dir_path, 'admin/base.html')
-    #override_template('admin/base.html', open(admin_base).read())
+    new_user_public = os.path.join(dir_path, 'templates/public.html')
+    override_template('users/public.html', open(new_user_public).read())
     #admin bocx setting
     app.view_functions['bocx.settings'] = bocx_setting
     app.add_url_rule('/api/v2/challenge-category/<int:bocx_id>', 'bocx.bocx_update_api',bocx_category_update_api)
@@ -47,6 +47,9 @@ def load(app):
     app.view_functions['admin.challenges_listing'] = bocx_challenges_listing
     app.view_functions['challenges.listing'] =  bocx_chal_listing
     app.view_functions['views.static_html'] = bocx_static_html
+    app.view_functions['users.listing'] = new_users_listing
+    app.view_functions['users.public'] = new_public
+    app.view_functions['teams.public'] = new_team_public
     #jinja
     app.jinja_env.filters['get_CTF_name'] = get_CTF_name
     app.jinja_env.filters['get_bocx_team_name'] = get_bocx_team_name

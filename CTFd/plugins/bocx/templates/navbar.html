@@ -11,7 +11,7 @@
         {% endfor %}
 
         {% if Configs.account_visibility != 'admins' %}
-          <a class="text-decoration-none text-light" href="{{ url_for('users.listing') }}">Users</a>
+        <!--  <a class="text-decoration-none text-light" href="{{ url_for('users.listing') }}">Users</a> -->
           {% if Configs.user_mode == 'teams' %}
             <a class="text-decoration-none text-light" href="{{ url_for('teams.listing') }}">Teams</a>
           {% endif %}
@@ -20,7 +20,7 @@
         {% if Configs.score_visibility != 'admins' %}
           <a class="text-decoration-none text-light" href="{{ url_for('scoreboard.listing') }}">Scoreboard</a>
         {% endif %}
-        <a class="text-decoration-none text-light" href="{{ url_for('challenges.listing') }}">Challenges</a>
+     <!--   <a class="text-decoration-none text-light" href="{{ url_for('challenges.listing') }}">Challenges</a> -->
         <a class="text-decoration-none text-light" href="{{ url_for('bocx.bocx_view_challenge_category') }}">Category</a>
         <a class="text-decoration-none text-light" href="{{ url_for('views.notifications') }}">Notifications</a>
       </nav>

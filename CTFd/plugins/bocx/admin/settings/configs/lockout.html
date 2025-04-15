@@ -1,10 +1,10 @@
-<div role="tabpanel" class="tab-pane config-section active" id="challenge-bocx-category">
+<div role="tabpanel" class="tab-pane config-section active" id="challenge-bocx-lockout">
     <form action="{{url_for('bocx.bocx_update_api',bocx_id=0)}}" method="POST" autocomplete="off" class="w-100"
         enctype=multipart/form-data>
-        <h5>BOCX CTF Exercise Module</h5>
+        <h5>BOCX CTF Category Lockout Module</h5>
 
         <small class="form-text text-muted">
-           CTF category for participants.
+           CTF category lockout.
         </small>
 
         <ul class="nav nav-tabs mt-3" role="tablist">
@@ -48,7 +48,6 @@
                                 <th class="sort-col text-center"><b>ID</b></th>
                                 <th class="sort-col"><b>Name</b></th>
                                 <th class="sort-col"><b>Image</b></th>
-                                <th class="sort-col"><b>Lock</b></th>
                                 <th class="d-none d-md-table-cell d-lg-table-cell sort-col"><b>Description</b></th>
                             </tr>
                         </thead>
@@ -65,13 +64,6 @@
                                 <td><a href="#">{{
                                         bocx_cat.category }}</a></td>
                                 <td><img style="width: 100px;height: auto;" src="{{script_root}}{{bocx_cat.location }}" alt="{{ bocx_cat.image_name }}" srcset="{{script_root}}{{ bocx_cat.location }}"></td>
-                                 {% if lockout %}
-                                    {% for lock in lockout %}
-                                      {% if bocx_cat.id ==  lock.ctf_category_id %}
-                                         <td class="text-center">{{ lock.lockout_percentage }}</td>
-                                      {% endif %}
-                                    {% endfor %}
-                                 {% endif %}
                                 <td class="d-none d-md-table-cell d-lg-table-cell">{{ bocx_cat.description }}</td>
                             </tr>
                             {% endfor %}
@@ -170,13 +162,6 @@
                             </label>
                             <br>
                             <input  type="file" id="bocx_image" name="bocx_image" accept=".png,.jpg,.jpeg,.svg">
-                        </div>
-                        <div class="form-group">
-                            <select class="form-control custom-select w-100" id="lockout"
-                                name="lockout" required="">
-                                <option value="0">False</option>
-                                <option value="1">True</option>
-                            </select>
                         </div>
                         <input type="hidden" value="true" name="bocx-category">
                         <button type="submit" class="btn btn-md btn-primary float-right">Update</button>
