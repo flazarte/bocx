@@ -1,0 +1,250 @@
+{% extends "base.html" %}
+{% block stylesheets %}
+<link href="{{url_for('bocx.static', filename='templates/assets/css/flipclock.css')}}" rel="stylesheet">
+<link rel="stylesheet" href="{{url_for('bocx.static', filename='templates/assets/css/particles.css')}}">
+<script src="{{url_for('bocx.static', filename='templates/assets/js/moment.min.js')}}"></script>
+<script src="{{url_for('bocx.static', filename='templates/assets/js/Chart.min.js')}}"></script>
+<link rel="stylesheet" href="{{url_for('bocx.static', filename='templates/assets/css/chart.css')}}">
+<style>
+         .neon-title {
+            color: #fff;
+            text-shadow: 0 0 5px #0ff, 0 0 10px #0ff, 0 0 15px #0ff, 0 0 20px #0ff;
+        }
+
+        .countdown-container {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            max-width: 200px; /* Adjust as needed */
+            height: auto;
+            margin: 10px;
+        }
+
+        .flag-container {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .flag {
+            width: 50px;
+            height: auto;
+            margin: 5px;
+            border: 1px solid #333;
+            box-shadow: 0 0 5px #0ff;
+        }
+
+        .centered-flags {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px; /* Space between flags */
+            margin-bottom: 20px;
+        }
+
+        .centered-flags .center-asian {
+            /* Add a more prominent style for the centered Asian flags */
+            width: 70px;
+            height: auto;
+            border: 2px solid #0f0; /* Highlight border */
+            box-shadow: 0 0 10px #0f0;
+        }
+
+        .participating-text {
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: #eee;
+        }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<body class="imgloaded" style="background-image: url({{url_for('bocx.static', filename='templates/assets/img/bg--world.png')}});background-position: right;">
+    <div class="glitch">
+        <div class="glitch__img glitch__img_leaderboard"></div>
+        <div class="glitch__img glitch__img_leaderboard"></div>
+        <div class="glitch__img glitch__img_leaderboard"></div>
+        <div class="glitch__img glitch__img_leaderboard"></div>
+        <div class="glitch__img glitch__img_leaderboard"></div>
+    </div>
+    <div class="navbar-dark text-white">
+        <div class="container">
+            <nav class="navbar px-0 navbar-expand-lg navbar-dark">
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+                <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                    <div class="navbar-nav">
+                        <a href="/" class="pl-md-0 p-3 text-decoration-none text-light">
+                            <img src="{{url_for('bocx.static', filename='templates/assets/img/asia_world_red.webp')}}" alt="Asian WorldSkills" class="logo">
+                        </a>
+                    </div>
+                    <div class="navbar-nav ml-auto">
+                        <div class="countdown-timer" style="float:right"></div>
+                    </div>
+                </div>
+            </nav>
+
+        </div>
+    </div>
+
+    <div class="jumbotron bg-transparent mb-0 pt-3 radius-0">
+        <div class="container">
+            
+   
+            <div class="row">
+                <div class="col-xl-12">
+                    <h1 class="display-1 bold color_white content__title text-center"><span class="color_danger">HACKER</span>BOARD<span class="vim-caret">&nbsp;</span></h1>
+                    <p class="text-grey lead text-spacey text-center hackerFont">
+                        Where the world get's ranked!
+                    </p>
+                    <div class="row justify-content-center my-5">
+                      <div class="col-xl-10">
+     {% include "components/errors.html" %}
+    <div id="score-graph" class="row d-flex align-items-center">
+		<div class="col-md-12 text-center">
+			<i class="fas fa-circle-notch fa-spin fa-3x fa-fw spinner"></i>
+		</div>
+	</div>  
+                           
+                        </div>
+                    </div>
+                </div>
+            </div>
+      {% cache 60, CacheKeys.PUBLIC_SCOREBOARD_TABLE %}
+	{% if standings %}
+            <div class="row mt-5  justify-content-center">
+                <div class="col-xl-10">
+                    <table class="table table-hover table-striped">
+                        <thead class="thead-dark hackerFont">
+                            <tr>
+                                <th>#</th>
+                                <th>Country</th>
+                                <th>Team Name</th>
+                                <th>Country Code</th>
+                                <th>Score</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                      {% for standing in standings %}                            
+                            <tr>
+                                <th scope="row">{{ loop.index }}</th>
+                                <td>
+                                    {% set country = standing.account_id | get_bocx_team_country %}
+                                  
+                                         {% if country == 'SG' %}
+                                             <div class="centered-flags">
+                                    <img src="{{url_for('bocx.static', filename='templates/assets/img/singapore.webp')}}" alt="Singapore" class="flag center-asian">
+                                   </div>
+                                          {% endif %}
+                                                                                            
+                                         {% if country == 'PH' %}
+                                           <div class="centered-flags">
+                                      <img src="{{url_for('bocx.static', filename='templates/assets/img/philippines.webp')}}" alt="Philippines" class="flag center-asian">
+                                   </div>
+                                          {% endif %}
+                                         {% if country == 'ID' %}
+                                           <div class="centered-flags">
+                                      <img src="{{url_for('bocx.static', filename='templates/assets/img/indonesia.webp')}}" alt="Indonesia" class="flag center-asian">
+                                   </div>
+                                         {% endif %}
+                                         {% if country == 'BN' %}
+                                                <div class="centered-flags">
+                                      <img src="{{url_for('bocx.static', filename='templates/assets/img/brunei.webp')}}" alt="brunei" class="flag center-asian">
+                                   </div> 
+                                        {% endif %}
+                                        {% if country == 'MY' %}
+                                               <div class="centered-flags">
+                                      <img src="{{url_for('bocx.static', filename='templates/assets/img/malaysia.webp')}}" alt="malaysia" class="flag center-asian">
+                                   </div>
+                                       {% endif %}
+                                         {% if country == 'TH' %}
+                                                  <div class="centered-flags">
+                                      <img src="{{url_for('bocx.static', filename='templates/assets/img/thailand.webp')}}" alt="thailand" class="flag center-asian">
+                                   </div> 
+                                        {% endif %}
+                                        {% if country == 'MM' %}
+                                                    <div class="centered-flags">
+                                      <img src="{{url_for('bocx.static', filename='templates/assets/img/myanmar.webp')}}" alt="myanmar" class="flag center-asian">
+                                   </div>
+                                      {% endif %}
+                                
+                       
+                                </td>
+                                <td>{{ standing.name | truncate(50) }}</td>
+                                <td>{{ standing.account_id | get_bocx_team_country }} </td>
+                                <td>{{ standing.score }}</td>
+                            </tr>
+                       {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+              </div>
+       
+      {% endif %}
+	{% endcache %}
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{url_for('bocx.static', filename='templates/assets/js/jquery-3.3.1.slim.min.js')}}"></script>
+<script src="{{url_for('bocx.static', filename='templates/assets/js/popper.min.js')}}"></script>
+<script src="{{url_for('bocx.static', filename='templates/assets/js/flipclock.min.js')}}"></script>
+<script src="{{url_for('bocx.static', filename='templates/assets/js/bootstrap.min.js')}}"></script>
+<script src="{{url_for('bocx.static', filename='templates/assets/js/particles.js')}}"></script>
+<script src="{{url_for('bocx.static', filename='templates/assets/js/app.js')}}"></script>
+<script src="{{url_for('bocx.static', filename='templates/assets/js/chart.js')}}"></script>
+<script defer src="{{ url_for('views.themes', path='js/echarts.bundle.js') }}"></script>
+<script>
+   const navbar = document.querySelector('.ht-tm-navbar');
+   if (navbar) {
+       navbar.remove();
+    }
+
+    const START = new Date(init.start * 1000);
+    const END = new Date(init.end * 1000);
+    const NOW = new Date(); // Get the current time
+
+    // Calculate the initial countdown value in seconds
+    let timeDifferenceSeconds = Math.max(0, Math.floor((END - NOW) / 1000));
+
+    var clock = new FlipClock($('.countdown-timer'), timeDifferenceSeconds, {
+        countdown: true,
+        onEnd: function() {
+            console.log("Countdown finished!");
+            // You can add actions to perform when the countdown ends here
+        }
+    });
+
+    // The following part seems to be for displaying the start and end times,
+    // it doesn't directly control the FlipClock countdown.
+    const countdown_disp = document.getElementById(".countdown-container");
+    const disp = {
+        hour: countdown_disp.querySelector(".hours"),
+        minute: countdown_disp.querySelector(".minutes"),
+        second: countdown_disp.querySelector(".seconds"),
+    }
+
+    const ctk_time = document.getElementById("ctk-time");
+    const time = {
+        start: ctk_time.querySelector(".start"),
+        end: ctk_time.querySelector(".end"),
+    }
+    time.start.textContent = START.toDateString();
+    time.end.textContent = END.toDateString();
+</script>
+{% endblock %}
+
+{% block entrypoint %}
+	<script defer src="{{ url_for('views.themes', path='js/pages/scoreboard.js') }}"></script>
+{% endblock %}

@@ -63,6 +63,13 @@
     <script src="{{url_for('bocx.static', filename='templates/assets/js/particles.js')}}"></script>
     <script src="{{url_for('bocx.static', filename='templates/assets/js/app.js')}}"></script>
     <script type="text/javascript" src="{{url_for('bocx.static', filename='js/custom.js', d='09101992')}}"></script>
+    <script defer="defer" src="{{ url_for('views.themes', theme='core', path='js/vendor.bundle.js') }}"></script>
+    <script defer="defer" src="{{ url_for('views.themes', theme='core', path='js/core.js') }}"></script>
+    <script defer="defer" src="{{ url_for('views.themes', theme='core', path='js/helpers.js') }}"></script>
+
+    {% block entrypoint %}
+      <script defer="defer" src="{{ url_for('views.themes', theme='core', path='js/pages/main.js') }}"></script>
+    {% endblock %}
     {% block scripts %}
     {% endblock %}
 

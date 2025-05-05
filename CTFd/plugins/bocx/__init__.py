@@ -5,7 +5,7 @@ from CTFd.plugins.flags import FlagException, get_flag_class
 from CTFd.plugins.challenges import BaseChallenge
 from CTFd.plugins import override_template, register_plugin_assets_directory
 from CTFd.plugins.challenges import CHALLENGE_CLASSES
-from CTFd.plugins.bocx.routing import bocx, new_team_public, new_public, new_users_listing, bocx_static_html, bocx_view_challenge_category_api, bocx_view_challenge_category, bocx_chal_listing, get_CTF_name, get_bocx_team_name, bocx_challenges_listing, bocx_setting, bocx_category_update_api, bocx_challenges_new, bocx_challenges_detail, bocx_get_team_api, bocx_challenge_update_api 
+from CTFd.plugins.bocx.routing import bocx, new_team_public, new_public, get_bocx_team_country, new_users_listing, bocx_static_html, bocx_view_challenge_category_api, bocx_view_challenge_category, bocx_chal_listing, get_CTF_name, get_bocx_team_name, bocx_challenges_listing, bocx_setting, bocx_category_update_api, bocx_challenges_new, bocx_challenges_detail, bocx_get_team_api, bocx_challenge_update_api 
 from CTFd.plugins.bocx.models import CategoryGameClass
 
 
@@ -26,6 +26,9 @@ def load(app):
     override_template('challenges.html', open(new_challenges).read())
     new_navbar = os.path.join(dir_path, 'templates/navbar.html')
     override_template('components/navbar.html', open(new_navbar).read())
+    #scoreboard Override
+    new_scorebord = os.path.join(dir_path, 'templates/new-scoreboard.html')
+    override_template('scoreboard.html', open(new_scorebord).read())
     #admin_base
     new_base = os.path.join(dir_path, 'templates/neon-base.html')
     override_template('base.html', open(new_base).read())
@@ -53,6 +56,7 @@ def load(app):
     #jinja
     app.jinja_env.filters['get_CTF_name'] = get_CTF_name
     app.jinja_env.filters['get_bocx_team_name'] = get_bocx_team_name
+    app.jinja_env.filters['get_bocx_team_country'] = get_bocx_team_country
     #register  new folders
     register_plugin_assets_directory(app, base_path="/plugins/bocx/admin/challenges/")
     register_plugin_assets_directory(app, base_path="/plugins/bocx/admin/settings/")

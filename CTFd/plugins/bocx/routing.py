@@ -237,6 +237,10 @@ def get_bocx_team_name(team_id):
     team = Teams.query.get(team_id)
     return team.name if team else None
 
+def get_bocx_team_country(team_id):
+    team = Teams.query.get(team_id)
+    return team.country if team else None
+
 
 #OVERIDE CHALLENGES
 @require_complete_profile
