@@ -32,7 +32,7 @@ class BOCX_lockout(db.Model):
     __table_args__ = {'extend_existing': True}
     id = db.Column(db.Integer, primary_key=True)
     ctf_category_id = db.Column(
-        db.Integer, db.ForeignKey("bocx_category.id", ondelete="CASCADE")
+        db.Integer, db.ForeignKey("bocx_category.id")
     )
     lockout_percentage = db.Column(db.Integer)
     def __init__(self, *args, **kwargs):
@@ -44,10 +44,10 @@ class BOCX_selected_cat(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     ctf_category_id = db.Column(
-        db.Integer, db.ForeignKey("bocx_category.id", ondelete="CASCADE")
+        db.Integer, db.ForeignKey("bocx_category.id")
     )
     team_id = db.Column(
-        db.Integer, db.ForeignKey("teams.id", ondelete="CASCADE")
+        db.Integer, db.ForeignKey("teams.id")
     ) 
     def __init__(self, *args, **kwargs):
         super(BOCX_selected_cat, self).__init__(**kwargs)
@@ -58,10 +58,10 @@ class BOCXCategoryChallenge(Challenges):
     __table_args__ = {'extend_existing': True}
     id = db.Column(None, db.ForeignKey('challenges.id', ondelete="CASCADE"), primary_key=True)
     ctf_category_id = db.Column(
-        db.Integer, db.ForeignKey("bocx_category.id", ondelete="CASCADE"), nullable=True
+        db.Integer, db.ForeignKey("bocx_category.id")
     )
     team_id = db.Column(
-        db.Integer, db.ForeignKey("teams.id", ondelete="CASCADE"), nullable=True
+        db.Integer, db.ForeignKey("teams.id")
     )
     initial = db.Column(db.Integer)
     writeups = db.Column(db.Text)

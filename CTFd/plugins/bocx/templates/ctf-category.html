@@ -22,6 +22,10 @@
                  {% endif %}
                  <div class="text-darkgrey text-mono my-2">{{ bocx_cat.category }}</div>
                 <div class="text-mono">
+                 {% if lockout %}
+                    {% for lock in lockout %}
+                       {% if bocx_cat.id ==  lock.ctf_category_id %}
+                {% if lock.lockout_percentage == 0 %}
                 <a href="#"
                   id="unlock-category"
                   data-value="{{ bocx_cat.id }}"
@@ -29,10 +33,16 @@
                   class="btn btn-success btn-shadow px-3 my-2 ml-0 text-left unlock-category-link">
                   Open 
                 </a>
+                {% endif %}
+                {% if lock.lockout_percentage == 1 %}
                 <a href="#" disable
                   class="btn btn-danger btn-shadow px-3 my-2 ml-0 ml-sm-1 text-left">
                   Closed
                 </a>
+                {% endif %}
+                       {% endif %}
+                   {% endfor %}
+               {% endif %}
               </div>
               </div>
      {% endfor %}  

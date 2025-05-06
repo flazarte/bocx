@@ -53,6 +53,7 @@ def bocx_challenge():
     user = get_current_user()
     #prepare team selected category
     selected = aliased(BOCX_selected_cat)
+    lockout =  aliased(BOCX_lockout)
     #chals = BOCXCategoryChallenge.query.join(selected,(selected.team_id == user.team_id)
      #       ).filter(BOCXCategoryChallenge.state != 'hidden'
      #       ).filter(BOCXCategoryChallenge.ctf_category_id == selected.ctf_category_id).order_by(BOCXCategoryChallenge.value.asc()).all()
@@ -60,7 +61,9 @@ def bocx_challenge():
     chals = BOCXCategoryChallenge.query.filter(
             or_(BOCXCategoryChallenge.state != 'hidden',BOCXCategoryChallenge.state is None),
             BOCXCategoryChallenge.team_id == user.team_id,
-            BOCXCategoryChallenge.ctf_category_id == selected.ctf_category_id).all()
+            BOCXCategoryChallenge.ctf_category_id == selected.ctf_category_id,
+            BOCXCategoryChallenge.ctf_category_id == lockout.ctf_category_id,
+            lockout.lockout_percentage != 1 ).all()
     return chals
 
 

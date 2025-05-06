@@ -96,6 +96,41 @@ $(document).ready(function () {
       }
   });
 
-
+  //Add Category
+  $('button#bocx_add').on('click', function (event) {
+    // Handle the form data
+   // event.preventDefault();
+    var $button = $(event.target); // The clicked button
+    var bocx_id = null;
+     console.log("add category");
+    if ($button) {
+     // $('input[name="bocx_category"]:checked').each(function () {
+      //  bocx_id = this.value;
+     // });
+     // if (bocx_id) {
+        $.ajax({
+          url: "/api/v2/challenge-category/0",
+          dataType: 'json',
+          cache: false,
+          contentType: false,
+          processData: false,
+          data: 0,
+          type: 'post',
+          success: function (response) {
+            //process response data
+            $.each(response, function (key, data) {
+              //console.log(response);
+              if (data.success) {
+                location.reload();
+              }
+            });
+          },
+          error: function (response) {
+            //error here
+          }
+        });
+     // }
+    }
+  });
 	
 });

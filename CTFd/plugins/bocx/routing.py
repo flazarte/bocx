@@ -59,6 +59,7 @@ def bocx_category_update_api(bocx_id):
     results = []
     #update data
     if request.method == 'POST':
+        #ADD Category
         bocx_update = request.form.get('bocx-category', None)
         if bocx_update != None:
             if request.form['bocx-category'] == 'true':
@@ -88,6 +89,19 @@ def bocx_category_update_api(bocx_id):
                    else:
                         db.session.query(BOCX_lockout).filter_by(ctf_category_id  = bocx_id).update(dict(lockout_percentage = lockout))
         db.session.commit()
+        #Cetgory Add
+        bocx_add = request.form.get('bocx-category-add', None)
+        if bocx_add != None:
+             cat_name = request.form['challenge-bocx-category-name']
+             cat_desc = request.form['challenge-bocx-category-description']
+             cat = BOCX_category(category=cat_name,description=cat_desc)
+             db.session.add(cat)
+             db.session.commit()
+             results.append({
+                    'success': True,
+                    'form': bocx_add
+                })
+             return jsonify(results)
         return redirect(request.referrer)
         
     #delete Data
@@ -300,7 +314,7 @@ def bocx_view_challenge_category():
            db.session.query(BOCX_selected_cat).filter_by(team_id = user.team_id).update(dict(ctf_category_id = cat_id))
         db.session.commit()
         return redirect(url_for('challenges.listing'))
-    return render_template('plugins/bocx/templates/ctf-category.html',cat=get_category())
+    return render_template('plugins/bocx/templates/ctf-category.html',cat=get_category(), lockout=get_lockout())
 
 
 @bocx.route('/api/v2/ctf-category/<int:cat_id>', methods=['POST', 'GET'])
