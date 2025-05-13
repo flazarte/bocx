@@ -5,7 +5,7 @@ from CTFd.plugins.flags import FlagException, get_flag_class
 from CTFd.plugins.challenges import BaseChallenge
 from CTFd.plugins import override_template, register_plugin_assets_directory
 from CTFd.plugins.challenges import CHALLENGE_CLASSES
-from CTFd.plugins.bocx.routing import bocx, new_team_public, new_public, get_bocx_team_country, new_users_listing, bocx_static_html, bocx_view_challenge_category_api, bocx_view_challenge_category, bocx_chal_listing, get_CTF_name, get_bocx_team_name, bocx_challenges_listing, bocx_setting, bocx_category_update_api, bocx_challenges_new, bocx_challenges_detail, bocx_get_team_api, bocx_challenge_update_api 
+from CTFd.plugins.bocx.routing import bocx, new_team_public, bocx_view_challenge_servers, new_public, get_bocx_team_country, new_users_listing, bocx_static_html, bocx_view_challenge_category_api, bocx_view_challenge_category, bocx_chal_listing, get_CTF_name, get_bocx_team_name, bocx_challenges_listing, bocx_setting, bocx_category_update_api, bocx_challenges_new, bocx_challenges_detail, bocx_get_team_api, bocx_challenge_update_api 
 from CTFd.plugins.bocx.models import CategoryGameClass
 
 
@@ -39,6 +39,7 @@ def load(app):
     app.add_url_rule('/api/v2/challenge-category/<int:bocx_id>', 'bocx.bocx_update_api',bocx_category_update_api)
     #user views
     app.view_functions['bocx.bocx_view_challenge_category'] = bocx_view_challenge_category
+    app.view_functions['bocx.bocx_view_challenge_servers'] = bocx_view_challenge_servers
     #api routes
     app.view_functions['bocx.bocx_update_api'] = bocx_category_update_api
     app.view_functions['bocx.bocx_get_team_api'] = bocx_get_team_api

@@ -13,7 +13,7 @@ from flask import (
 )
 from CTFd.utils.decorators import admins_only
 from CTFd.plugins import bypass_csrf_protection
-from CTFd.plugins.bocx.models  import BOCX_category, BOCX_lockout, BOCXCategoryChallenge, BOCX_selected_cat
+from CTFd.plugins.bocx.models  import BOCX_category, BOCX_lockout, BOCXCategoryChallenge, BOCX_selected_cat, BOCX_team_servers
 from CTFd.plugins.bocx.utils import  get_category, get_lockout, get_teams, get_challenges
 from werkzeug.utils import secure_filename
 from CTFd.plugins.challenges import CHALLENGE_CLASSES, get_chal_class
@@ -293,7 +293,7 @@ def bocx_chal_listing():
     if ctf_ended() is True:
         infos.append(f"{Configs.ctf_name} has ended")
 
-    return render_template("challenges.html", results = get_challenges(), infos=infos, errors=errors)
+    return render_template("challenges.html", results = get_challenges(), infos=infos, errors=errors, user=user)
 
 
 
@@ -438,3 +438,24 @@ def new_team_public(team_id):
         infos=infos,
         errors=errors,
     )
+
+@bocx.route('/ctf-servers',methods=['GET'])
+@require_team_mode
+@authed_only
+def bocx_view_challenge_servers():
+    user = get_current_user()
+    cat_exist = db.session.query(BOCX_selected_cat).filter_by(team_id = user.team_id).first()
+    if not authed():
+        return redirect(url_for('auth.login', next=request.path))
+    if get_current_team() is None:
+        return redirect(url_for("teams.private", next=request.full_path))
+    if request.method == 'POST':
+        if cat_exist is None:
+           db.session.merge(BOCX_selected_cat(ctf_category_id = cat_id, team_id = user.team_id))
+        else:
+           db.session.query(BOCX_selected_cat).filter_by(team_id = user.team_id).update(dict(ctf_category_id = cat_id))
+        db.session.commit()
+        return redirect(url_for('challenges.listing'))
+    #get all servers machine inventory for each CTF Team
+    servers = db.session.query(BOCX_team_servers).all()
+    return render_template('plugins/bocx/templates/bocx-servers.html',cat=get_category(), lockout=get_lockout())

@@ -1,0 +1,364 @@
+{% extends "base.html" %}
+{% block stylesheets %}
+<link rel="stylesheet" href="{{url_for('bocx.static', filename='templates/assets/css/main.css')}}">
+<link rel="stylesheet" href="{{url_for('bocx.static', filename='templates/assets/css/particles.css')}}">
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .server-card {
+            background-color: #f9fafb;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            padding: 2rem;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            border: 1px solid #e5e7eb;
+        }
+
+        .server-card:hover {
+            transform: translateY(-0.5rem);
+            box-shadow: 0 6px 8px -1px rgba(0, 0, 0, 0.08), 0 4px 6px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .server-logo {
+            width: 8rem;
+            height: 8rem;
+            margin-bottom: 1.5rem;
+            border-radius: 50%;
+            object-fit: contain;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            background-color: white;
+        }
+
+        .server-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #1f2937;
+        }
+
+        .server-description {
+            font-size: 1rem;
+            color: #4b5563;
+            margin-bottom: 1rem;
+        }
+
+        .access-button {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            background-color: #3b82f6;
+            color: white;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .access-button:hover {
+            background-color: #2563eb;
+            transform: translateY(-0.25rem);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+        }
+
+        .access-button:active {
+            background-color: #1e40af;
+            transform: translateY(0);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .topology-section {
+            margin-top: 4rem;
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            letter-spacing: -0.025em;
+        }
+
+        .server-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+
+        .loading-indicator {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 10rem;
+        }
+
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top-color: #3b82f6;
+            width: 3rem;
+            height: 3rem;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .error-message {
+            color: #dc2626;
+            font-size: 1rem;
+            margin-top: 1rem;
+            text-align: center;
+            background-color: #fee2e2;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid #fecaca;
+        }
+
+        .credentials-section {
+            margin-top: 4rem;
+            padding: 2rem;
+            background-color: #f9fafb;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            border: 1px solid #e5e7eb;
+        }
+
+        .credentials-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            letter-spacing: -0.025em;
+        }
+
+        .credential-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .credential-table th, .credential-table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #e5e7eb;
+            text-align: left;
+        }
+
+        .credential-table th {
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .credential-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+    </style>
+{% endblock %}
+
+
+{% block content %}
+ <header class="bg-white py-4 shadow-md">
+        <div class="container mx-auto px-4">
+            <h1 class="text-2xl font-semibold text-gray-800 text-center">CTF Team Server Topology</h1>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8">
+        <section class="topology-section">
+            <h2 class="section-title">Server Infrastructure</h2>
+            <div id="server-grid" class="server-grid">
+                <div id="loading-indicator" class="loading-indicator">
+                    <div class="spinner"></div>
+                </div>
+            </div>
+            <div id="error-message" class="error-message" style="display: none;"></div>
+        </section>
+
+        <section class="credentials-section">
+            <h2 class="credentials-title">User Credentials</h2>
+            <p class="mb-4 text-gray-600 text-center">Use the following credentials to access the servers:</p>
+            <table class="credential-table">
+                <thead>
+                    <tr>
+                        <th>Server</th>
+                        <th>Username</th>
+                        <th>Password</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Web Server 1</td>
+                        <td>ctfuser1</td>
+                        <td>password123</td>
+                    </tr>
+                    <tr>
+                        <td>Web Server 2</td>
+                        <td>ctfuser2</td>
+                        <td>securepass456</td>
+                    </tr>
+                    <tr>
+                        <td>Database Server</td>
+                        <td>ctf_db_admin</td>
+                        <td>dbpass789</td>
+                    </tr>
+                     <tr>
+                        <td>File Server</td>
+                        <td>ctf_file_user</td>
+                        <td>filepass321</td>
+                    </tr>
+                    <tr>
+                        <td>Challenge Server 1</td>
+                        <td>ctf_chal1</td>
+                        <td>challengepass1</td>
+                    </tr>
+                    <tr>
+                        <td>Challenge Server 2</td>
+                        <td>ctf_chal2</td>
+                        <td>challengepass2</td>
+                    </tr>
+                    <tr>
+                        <td>VPN Access</td>
+                        <td>ctf_vpn</td>
+                        <td>vpnpass123</td>
+                    </tr>
+                    <tr>
+                        <td>Monitoring Server</td>
+                        <td>ctf_monitor</td>
+                        <td>monitorpass</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p class="mt-4 text-gray-500 text-sm text-center">
+                <strong>Note:</strong> These credentials are for the CTF environment only.  Do not use them on any other systems.
+            </p>
+        </section>
+    </main>
+
+{% endblock %}
+
+
+{% block scripts %}
+<script src="{{url_for('bocx.static', filename='templates/assets/js/popper.min.js')}}"></script>
+<script src="{{url_for('bocx.static', filename='templates/assets/js/bootstrap.min.js')}}"></script>
+<script src="{{url_for('bocx.static', filename='templates/assets/js/particles.js')}}"></script>
+<script src="{{url_for('bocx.static', filename='templates/assets/js/app.js')}}"></script>
+<script>
+        const serverData = [
+            {
+                name: "Web Server 1",
+                description: "Handles the main website and challenges.",
+                logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Apache_HTTP_server_logo.svg/800px-Apache_HTTP_server_logo.svg.png",
+                accessUrl: "http://web1.example.com",
+            },
+            {
+                name: "Web Server 2",
+                description: "Hosts auxiliary web applications.",
+                logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Nginx_logo.svg/800px-Nginx_logo.svg.png",
+                accessUrl: "http://web2.example.com",
+            },
+            {
+                name: "Database Server",
+                description: "Stores challenge data and user information.",
+                logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/PostgreSQL_Logo.svg/1185px-PostgreSQL_Logo.svg.png",
+                accessUrl: "http://db.example.com",
+            },
+            {
+                name: "File Server",
+                description: "Stores downloadable files and challenge assets.",
+                logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/FileZilla_Logo.svg/1024px-FileZilla_Logo.svg.png",
+                accessUrl: "http://files.example.com",
+            },
+            {
+                name: "Challenge Server 1",
+                description: "Hosts a specific category of challenges.",
+                logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/Docker_Logo.svg/2048px-Docker_Logo.svg.png",
+                accessUrl: "http://challenge1.example.com",
+            },
+             {
+                name: "Challenge Server 2",
+                description: "Hosts another category of challenges.",
+                logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Kubernetes-icon-white.svg/256px-Kubernetes-icon-white.svg.png",
+                accessUrl: "http://challenge2.example.com",
+            },
+            {
+                name: "VPN Access",
+                description: "Provides secure access to the internal network.",
+                logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/OpenVPN-Logo.svg/1024px-OpenVPN-Logo.svg.png",
+                accessUrl: "http://vpn.example.com",
+            },
+            {
+                name: "Monitoring Server",
+                description: "Monitors server performance and uptime.",
+                logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Prometheus_logo.svg/512px-Prometheus_logo.svg.png",
+                accessUrl: "http://monitor.example.com",
+            },
+        ];
+
+        const serverGrid = document.getElementById("server-grid");
+        const loadingIndicator = document.getElementById("loading-indicator");
+        const errorMessageElement = document.getElementById("error-message");
+
+        function displayServers() {
+            serverGrid.innerHTML = "";
+
+            try {
+                if (!Array.isArray(serverData) || serverData.length === 0) {
+                    throw new Error("Server data is empty or invalid.");
+                }
+
+                serverData.forEach((server) => {
+                    const serverCard = document.createElement("div");
+                    serverCard.className = "server-card";
+
+                    const serverLogo = document.createElement("img");
+                    serverLogo.className = "server-logo";
+                    serverLogo.src = server.logo;
+                    serverLogo.alt = `${server.name} Logo`;
+
+                    const serverName = document.createElement("h3");
+                    serverName.className = "server-name";
+                    serverName.textContent = server.name;
+
+                    const serverDescription = document.createElement("p");
+                    serverDescription.className = "server-description";
+                    serverDescription.textContent = server.description;
+
+                    const accessButton = document.createElement("a");
+                    accessButton.className = "access-button";
+                    accessButton.href = server.accessUrl;
+                    accessButton.textContent = "Access Server";
+
+                    serverCard.appendChild(serverLogo);
+                    serverCard.appendChild(serverName);
+                    serverCard.appendChild(serverDescription);
+                    serverCard.appendChild(accessButton);
+                    serverGrid.appendChild(serverCard);
+                });
+            } catch (error) {
+                console.error("Error displaying servers:", error);
+                errorMessageElement.textContent = "Failed to load server information. Please check back later.";
+                errorMessageElement.style.display = "block";
+            } finally {
+                loadingIndicator.style.display = "none";
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            setTimeout(displayServers, 500);
+        });
+    </script>
+{% endblock %}

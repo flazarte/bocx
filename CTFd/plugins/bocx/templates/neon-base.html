@@ -13,6 +13,14 @@
     <link rel="stylesheet" href="{{url_for('bocx.static', filename='templates/assets/css/bootstrap4-neon-glow.min.css')}}">
 
     <link rel="stylesheet" href="{{url_for('bocx.static', filename='templates/assets/css/hack.min.css')}}">
+    <style>
+      #particles-js {
+         position: absolute;
+         width: 100%;
+         height: 100%;
+         z-index: -1;
+      }
+    </style>
     {% block stylesheets %}{% endblock %}
 
     {{ Plugins.styles }}
@@ -29,10 +37,9 @@
     </script>
     {{ Configs.theme_header }}
   </head>
-
+    <div id="particles-js"></div>
   <body>
-   
-  <div id="particles-js"></div>
+
     {% include "components/navbar.html" %}
     <main role="main">
       {% block content %}{% endblock %}

@@ -27,6 +27,27 @@ class BOCX_category(db.Model):
     def __init__(self, *args, **kwargs):
         super(BOCX_category, self).__init__(**kwargs)
 
+class BOCX_team_servers(db.Model):
+    __tablename__ = 'bocx_team_servers'
+    __table_args__ = {'extend_existing': True}
+
+    id = db.Column(db.Integer, primary_key=True)
+    ctf_category_id = db.Column(
+        db.Integer, db.ForeignKey("bocx_category.id")
+    )
+    team_id = db.Column(
+        db.Integer, db.ForeignKey("teams.id")
+    ) 
+    server_name = db.Column(db.Text)
+    server_username = db.Column(db.Text)
+    server_password = db.Column(db.Text)
+    server_description = db.Column(db.Text)
+    server_host = db.Column(db.Text)
+    server_image_name = db.Column(db.Text)
+    server_image_location = db.Column(db.Text)
+    def __init__(self, *args, **kwargs):
+        super(BOCX_team_servers, self).__init__(**kwargs)
+
 
 class BOCX_lockout(db.Model):
     __table_args__ = {'extend_existing': True}

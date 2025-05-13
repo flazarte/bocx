@@ -19,11 +19,50 @@
               <a href="{{ url_for('views.static_html', route='/') }}" class="pl-md-0 p-3 text-light">Home</a>
               <a href="{{ url_for('scoreboard.listing') }}" class="p-3 text-decoration-none text-light">Leaderboard</a>
               <a href="{{ url_for('bocx.bocx_view_challenge_category') }}" class="p-3 text-decoration-none text-light">Category</a>
+              <a href="{{ url_for('bocx.bocx_view_challenge_servers') }}" class="p-3 text-decoration-none text-light">Servers</a>          
             </div>
             <div class="nav-right">
                 <div class="countdown-timer" style="float:right"></div>
-                <div class="mr-4 p-3" style="float:right">80 Points</div>
-                <div class="mr-4 p-3" style="float:right">TEAM NAME</div>
+                <div class="mr-4 p-3" style="float:right">
+                    {% set country = user.team_id | get_bocx_team_country %}
+
+                                         {% if country == 'SG' %}
+                                     
+                                    <img src="{{url_for('bocx.static', filename='templates/assets/img/singapore.webp')}}" alt="Singapore" class="flag center-asian" style="width:50px;">
+                                  
+                                          {% endif %}
+
+                                         {% if country == 'PH' %}
+                                      
+                                      <img src="{{url_for('bocx.static', filename='templates/assets/img/philippines.webp')}}" alt="Philippines" class="flag center-asian" style="width:50px;">
+                                 
+                                          {% endif %}
+                                         {% if country == 'ID' %}
+                                    
+                                      <img src="{{url_for('bocx.static', filename='templates/assets/img/indonesia.webp')}}" alt="Indonesia" class="flag center-asian" style="width:50px;">
+                                  
+                                         {% endif %}
+                                         {% if country == 'BN' %}
+                                      
+                                      <img src="{{url_for('bocx.static', filename='templates/assets/img/brunei.webp')}}" alt="brunei" class="flag center-asian" style="width:50px;">
+                                  
+                                        {% endif %}
+                                        {% if country == 'MY' %}
+                                      
+                                      <img src="{{url_for('bocx.static', filename='templates/assets/img/malaysia.webp')}}" alt="malaysia" class="flag center-asian" style="width:50px;">
+                                  
+                                       {% endif %}
+                                         {% if country == 'TH' %}
+                                        
+                                      <img src="{{url_for('bocx.static', filename='templates/assets/img/thailand.webp')}}" alt="thailand" class="flag center-asian" style="width:50px;">
+                                 
+                                        {% endif %}
+                                        {% if country == 'MM' %}
+                                          
+                                      <img src="{{url_for('bocx.static', filename='templates/assets/img/myanmar.webp')}}" alt="myanmar" class="flag center-asian" style="width:50px;">
+                                 
+                                      {% endif %}
+                </div>
             </div>
           </div>
         </nav>
