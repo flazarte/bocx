@@ -24,16 +24,18 @@
 <div class="container">
 	<div class="row">
 		<div class="col-md-3">
-			<ul class="nav nav-pills flex-column">
-				<li class="nav-item">
-					<a class="nav-link rounded-0 active" href="#challenge-bocx-category" role="tab" data-toggle="tab">CTF Category</a>
-				</li>
-			</ul>
-                      <!--  <ul class="nav nav-pills flex-column">
-                               <li class="nav-item">
-                                        <a class="nav-link rounded-0" href="#challenge-bocx-lockout" role="tab" data-toggle="tab">Lockout</a>
-                                </li>
-                       </ul> -->
+                     <ul id="config-sidebar" class="nav nav-pills flex-column">
+                           <li class="nav-item">
+			        <a class="nav-link rounded-0 py-1 active" href="#challenge-bocx-category" role="tab" data-toggle="tab">
+                 			<i class="fa fa-gear action-icon"></i>CTF Category
+			       </a>
+		           </li>     
+                           <li class="nav-item">
+				<a class="nav-link rounded-0 py-1" href="#player-servers" role="tab" data-toggle="tab">
+					<i class="fa fa-users action-icon"></i>Servers
+				</a>
+			   </li>
+                    </ul>
 		</div>
 		<div class="col-md-9">
 			{% for error in errors %}
@@ -48,7 +50,9 @@
 
 			<div class="tab-content">
 				<!-- setting content -->
-				{% include "plugins/bocx/admin/settings/configs/bocx-category.html" %}
+			         {% include "plugins/bocx/admin/settings/configs/ctf-category.html" %}
+                                 {% include "plugins/bocx/admin/settings/configs/bocx-servers.html" %}
+    
                           
                 <!-- end content -->
 			</div>

@@ -1,0 +1,206 @@
+<div role="tabpanel" class="tab-pane config-section" id="player-servers">
+    <form action="" method="POST" autocomplete="off" class="w-100"
+        enctype=multipart/form-data>
+        <h5>Set Up Team Access CTF Servers</h5>
+
+        <small class="form-text text-muted">
+            The Servers of BOCX  challenge.
+        </small>
+
+        <ul class="nav nav-tabs mt-3" role="tablist">
+            <li class="nav-item active">
+                <a class="nav-link active" href="#player_logo-list" role="tab" data-toggle="tab">
+                    List
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#player_logo-create" role="tab" data-toggle="tab">
+                    Create
+                </a>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="player_logo-list">
+                <div class="col-md-12 py-3">
+                    <small>List of Servers.</small>
+                </div>
+                <div class="float-right pb-3">
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-outline-secondary" data-toggle="tooltip"
+                            title="Edit Category" id="team-logo-edit-button">
+                            <i class="btn-fa fas fa-pencil-alt"></i>
+                        </button>
+                        <button type="button" class="btn btn-outline-danger" data-toggle="tooltip"
+                            title="Delete Category" id="category-challenge-delete-button">
+                            <i class="btn-fa fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                </div>
+                <div id="player_logo-list" class="pt-3">
+                    <table id="player_logo-list" class="table table-striped border">
+                        <thead>
+                            <tr>
+                                <td class="d-block border-right border-bottom text-center" data-checkbox>
+                                    <div class="form-check">
+                                        <!-- <input type="checkbox" class="form-check-input" data-checkbox-all>&nbsp; -->
+                                    </div>
+                                </td>
+                                <th class="sort-col text-center"><b>ID</b></th>
+			        <th class="sort-col"><b>Logo</b></th>
+                                <th class="sort-col"><b>Team Name</b></th>
+                                <th class="d-none d-md-table-cell d-lg-table-cell sort-col"><b>Category</b></th>
+                                <th class="sort-col"><b>Server name</b></th>
+                                <th class="sort-col"><b>Team Description</b></th>
+                                <th class="sort-col"><b>Host</b></th>
+                                <th class="sort-col"><b>Username</b></th>
+                                <th class="sort-col"><b>Password</b></th>
+                            </tr>
+                        </thead>
+                        <tbody id="player_logo-list">
+                            {% for server in servers %}
+                            <tr>
+                                <td class="d-block border-right text-center" data-checkbox>
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" value=""
+                                            name="team_logo_checkbox">&nbsp;
+                                    </div>
+                                </td>
+                                <td class="text-center">{{ server.id }}</td>
+                                <td><img style="width: 100px;height: auto;" src="{{script_root}}{{server.server_image_location }}" alt="{{ server.server_image_name }}" srcset="{{script_root}}{{ server.server_image_location }}"></td>
+                                <td><a href="/admin/teams/{{server.team_id}}">{{
+                                        server.team_id }}</a></td>
+                                <td class="d-none d-md-table-cell d-lg-table-cell">{{ server.ctf_category_id }}</td>
+                                <td class="d-none d-md-table-cell d-lg-table-cell">{{ server.server_name }}</td>
+                                <td class="d-none d-md-table-cell d-lg-table-cell">{{ server.server_description }}</td>
+                                <td class="d-none d-md-table-cell d-lg-table-cell">{{ server.server_host }}</td>
+				<td class="d-none d-md-table-cell d-lg-table-cell">{{ server.server_username}}</td>
+                                <td class="d-none d-md-table-cell d-lg-table-cell">{{ server.server_password}}</td>				
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div role="tabpanel" class="tab-pane" id="player_logo-create">
+                <div class="col-md-12 py-3">
+                    <small>Challenge Category.</small>
+                </div>
+                <div id="player_logo-create" class="pt-3">
+					<div class="form-group">
+						<label for="c3_category_name">
+							Create Servers
+							<small class="form-text text-muted">Create Team Servers per category.</small>
+						</label>
+						<input class="form-control" id='server_name' name='server_name' type='text' placeholder="Server Name">
+					</div>
+                                        <div class="form-group">
+                                            <label for="category_image">
+                                                        CTF Category 
+                                                 
+                                            </label>
+                                            <br>
+                                            <select class="form-control custom-select w-100" id="ctf_category_id" name="ctf_category_id" required="">
+                                                  {% for bocx_cat in cat %}
+                                                <option value="{{ bocx_cat.id }}">{{ bocx_cat.category }}</option>
+                                                  {% endfor %}
+                                            </select>
+                                        </div>
+                                       <div class="form-group">
+                                            <label for="category_image">
+                                                        Team
+
+                                            </label>
+                                            <br>
+                                            <select class="form-control custom-select w-100" id="team_id" name="team_id" required="">
+                                              {% for team_server in teams %}      
+                                                    <option value="{{ team_server.id }}">{{ team_server.name }}</option>
+                                              {% endfor %}
+                                            </select>
+                                        </div>
+			
+					<div class="form-group">
+						<label>
+							Server  Description<br>
+							<small class="form-text text-muted">
+								Description for the Server
+							</small>
+						</label>
+						<textarea class="form-control" type="text" id="server_description" name="server_description" rows="3" placeholder="This is Server description.."></textarea>
+					</div>
+                                         <div class="form-group">
+                                                <label>
+                                                        Server  Credentials<br>
+                                                        <small class="form-text text-muted">
+                                                                The Team Servers Login Credentials
+                                                        </small>
+                                                </label>
+                                                <input class="form-control" id='server_host' name='server_host' type='text' placeholder="Server Host:Port">
+                                                <input class="form-control" id='server_username' name='server_username' type='text' placeholder="Server Username">
+                                                <input class="form-control" id='server_password' name='server_password' type='text' placeholder="Server Password">
+                                        </div>
+			
+					<div class="form-group">
+						<label for="category_image">
+							Server Image
+							<small class="form-text text-muted">Server Image (Thumbnail)</small>
+						</label>
+						<br>
+						<input  type="file" id="server_image_name" name="server_image_name" accept=".png,,jpg,.jpeg">
+					</div>
+			                <input type="hidden" value="true" name="bocx-server-add">
+					<button type="submit" class="btn btn-md btn-primary float-right">Create</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- update Modal -->
+<div class="modal team_logo_update fade" tabindex="-1" role="dialog" aria-modal="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Update Team Logo</h5> <button type="button" class="close" data-dismiss="modal"
+                    aria-label="Close"> <span aria-hidden="true">×</span> </button>
+            </div>
+            <div class="modal-body">
+                <form action="" method="post" enctype=multipart/form-data>
+                    <div id="player_logo-create" class="pt-3">
+                        <div class="form-group">
+                            <label for="category_image">
+                                Team Logo Image
+                                <small class="form-text text-muted">Team Logo Image (Thumbnail)</small>
+                                <small class="form-text text-muted">Insert New Logo to replace!</small>
+                            </label>
+                            <br>
+                            <input  type="file" id="team_logo" name="team_logo" accept=".png,,jpg,.jpeg">
+                        </div>
+                
+                        <button type="submit" class="btn btn-md btn-primary float-right">Update</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Delete Modal -->
+<div class="modal cat_delete fade" tabindex="-1" role="dialog" aria-modal="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete Challenge Category</h5> <button type="button" class="close" data-dismiss="modal"
+                    aria-label="Close"> <span aria-hidden="true">×</span> </button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to Challenge Category?</p>
+            </div>
+            <div class="modal-footer"> 
+                <button type="button" class="btn btn-danger" data-dismiss="modal">No</button>
+                <button id="cat_delete" type="button" class="btn btn-primary" data-dismiss="modal">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>

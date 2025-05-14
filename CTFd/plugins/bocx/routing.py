@@ -46,10 +46,40 @@ ALLOWED_EXTENSIONS = set(['pdf'])
 
 
 #routes
-@bocx.route('/admin/bocx_settings', methods=['GET'])
+@bocx.route('/admin/bocx_settings', methods=['GET', 'POST'])
 @admins_only
+@bypass_csrf_protection
 def bocx_setting():
-    return render_template("plugins/bocx/admin/settings/settings.html",cat=get_category(), lockout=get_lockout())
+    results = []
+    teams=Teams.query.filter_by(banned=False, hidden=False).all()
+    servers=db.session.query(BOCX_team_servers).all() 
+    if request.method == 'POST': 
+       bocx_server_add = request.form.get('bocx-server-add', None)
+       if bocx_server_add != None:
+           ctf_category_id = request.form['ctf_category_id']
+           team_id  = request.form['team_id']
+           server_name = request.form['server_name']
+           server_username = request.form['server_username']
+           server_password = request.form['server_password']
+           server_description = request.form['server_description']
+           server_host = request.form['server_host']
+           server_image_name = request.form['server_image_name']
+           if request.files['server_image_name']:
+               cat_image = request.files['server_image_name']
+               filename = secure_filename(cat_image.filename)
+               cat_image.save(os.path.join(app.config['UPLOAD_PATH']+"admin/assets/img", filename))
+               loc = CATEGORY_FILE_LOCATON+filename
+               add_server = BOCX_team_servers(server_name=server_name,ctf_category_id=ctf_category_id,team_id=team_id,server_username=server_username,server_password=server_password,server_description=server_description,server_host=server_host,server_image_name=filename,server_image_location=loc)
+               db.session.add(add_server)
+               db.session.commit()
+               #return redirect(request.referrer)
+               return jsonify(results)        
+           add_server = BOCX_team_servers(server_name=server_name,ctf_category_id=ctf_category_id,team_id=team_id,server_username=server_username,server_password=server_password,server_description=server_description,server_host=server_host)
+           db.session.add(add_server)
+           db.session.commit()
+       return jsonify(results)
+       #return redirect(request.referrer)
+    return render_template("plugins/bocx/admin/settings/settings.html",cat=get_category(), lockout=get_lockout(), teams=teams, servers=servers)
 
 #bocx category edit/update/add
 @bocx.route('/api/v2/challenge-category/<int:bocx_id>', methods=['GET','POST','DELETE'])
@@ -456,6 +486,7 @@ def bocx_view_challenge_servers():
            db.session.query(BOCX_selected_cat).filter_by(team_id = user.team_id).update(dict(ctf_category_id = cat_id))
         db.session.commit()
         return redirect(url_for('challenges.listing'))
+    teams=Teams.query.filter_by(banned=False, hidden=False).first_or_404()
     #get all servers machine inventory for each CTF Team
     servers = db.session.query(BOCX_team_servers).all()
-    return render_template('plugins/bocx/templates/bocx-servers.html',cat=get_category(), lockout=get_lockout())
+    return render_template('plugins/bocx/templates/bocx-servers.html',cat=get_category(), lockout=get_lockout(), teams=teams)
