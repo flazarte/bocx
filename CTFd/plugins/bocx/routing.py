@@ -63,7 +63,6 @@ def bocx_setting():
            server_password = request.form['server_password']
            server_description = request.form['server_description']
            server_host = request.form['server_host']
-           server_image_name = request.form['server_image_name']
            if request.files['server_image_name']:
                cat_image = request.files['server_image_name']
                filename = secure_filename(cat_image.filename)
@@ -72,13 +71,13 @@ def bocx_setting():
                add_server = BOCX_team_servers(server_name=server_name,ctf_category_id=ctf_category_id,team_id=team_id,server_username=server_username,server_password=server_password,server_description=server_description,server_host=server_host,server_image_name=filename,server_image_location=loc)
                db.session.add(add_server)
                db.session.commit()
-               #return redirect(request.referrer)
-               return jsonify(results)        
+               return redirect(request.referrer)
+               #return jsonify(results)        
            add_server = BOCX_team_servers(server_name=server_name,ctf_category_id=ctf_category_id,team_id=team_id,server_username=server_username,server_password=server_password,server_description=server_description,server_host=server_host)
            db.session.add(add_server)
            db.session.commit()
-       return jsonify(results)
-       #return redirect(request.referrer)
+       #return jsonify(results)
+       return redirect(request.referrer)
     return render_template("plugins/bocx/admin/settings/settings.html",cat=get_category(), lockout=get_lockout(), teams=teams, servers=servers)
 
 #bocx category edit/update/add
@@ -488,5 +487,5 @@ def bocx_view_challenge_servers():
         return redirect(url_for('challenges.listing'))
     teams=Teams.query.filter_by(banned=False, hidden=False).first_or_404()
     #get all servers machine inventory for each CTF Team
-    servers = db.session.query(BOCX_team_servers).all()
-    return render_template('plugins/bocx/templates/bocx-servers.html',cat=get_category(), lockout=get_lockout(), teams=teams)
+    servers=db.session.query(BOCX_team_servers).filter_by(team_id=user.team_id,ctf_category_id=cat_exist.ctf_category_id).all() 
+    return render_template('plugins/bocx/templates/bocx-servers.html',cat=get_category(), lockout=get_lockout(), teams=teams, servers=servers)

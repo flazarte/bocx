@@ -28,11 +28,11 @@
                 <div class="float-right pb-3">
                     <div class="btn-group" role="group">
                         <button type="button" class="btn btn-outline-secondary" data-toggle="tooltip"
-                            title="Edit Category" id="team-logo-edit-button">
+                            title="Edit Server" id="team-server-edit-button">
                             <i class="btn-fa fas fa-pencil-alt"></i>
                         </button>
                         <button type="button" class="btn btn-outline-danger" data-toggle="tooltip"
-                            title="Delete Category" id="category-challenge-delete-button">
+                            title="Delete Server" id="team-server-delete-button">
                             <i class="btn-fa fas fa-trash-alt"></i>
                         </button>
                     </div>
@@ -49,7 +49,7 @@
                                 <th class="sort-col text-center"><b>ID</b></th>
 			        <th class="sort-col"><b>Logo</b></th>
                                 <th class="sort-col"><b>Team Name</b></th>
-                                <th class="d-none d-md-table-cell d-lg-table-cell sort-col"><b>Category</b></th>
+                                <th class="sort-col"><b>Category</b></th>
                                 <th class="sort-col"><b>Server name</b></th>
                                 <th class="sort-col"><b>Team Description</b></th>
                                 <th class="sort-col"><b>Host</b></th>
@@ -63,14 +63,14 @@
                                 <td class="d-block border-right text-center" data-checkbox>
                                     <div class="form-check">
                                         <input type="checkbox" class="form-check-input" value=""
-                                            name="team_logo_checkbox">&nbsp;
+                                            name="server_logo_checkbox">&nbsp;
                                     </div>
                                 </td>
-                                <td class="text-center">{{ server.id }}</td>
+                                <td class="d-none d-md-table-cell d-lg-table-cell">{{ server.id }}</td>
                                 <td><img style="width: 100px;height: auto;" src="{{script_root}}{{server.server_image_location }}" alt="{{ server.server_image_name }}" srcset="{{script_root}}{{ server.server_image_location }}"></td>
-                                <td><a href="/admin/teams/{{server.team_id}}">{{
-                                        server.team_id }}</a></td>
-                                <td class="d-none d-md-table-cell d-lg-table-cell">{{ server.ctf_category_id }}</td>
+                                <td><a href="/admin/teams/{{server.team_id}}">
+                                     {{server.team_id | get_bocx_team_name }}</a></td>
+                                <td class="d-none d-md-table-cell d-lg-table-cell">{{ server.ctf_category_id | get_CTF_name}}</td>
                                 <td class="d-none d-md-table-cell d-lg-table-cell">{{ server.server_name }}</td>
                                 <td class="d-none d-md-table-cell d-lg-table-cell">{{ server.server_description }}</td>
                                 <td class="d-none d-md-table-cell d-lg-table-cell">{{ server.server_host }}</td>
@@ -92,7 +92,7 @@
 							Create Servers
 							<small class="form-text text-muted">Create Team Servers per category.</small>
 						</label>
-						<input class="form-control" id='server_name' name='server_name' type='text' placeholder="Server Name">
+						<input class="form-control" id="server_name" name="server_name" type="text" placeholder="Server Name" required="">
 					</div>
                                         <div class="form-group">
                                             <label for="category_image">
@@ -135,9 +135,9 @@
                                                                 The Team Servers Login Credentials
                                                         </small>
                                                 </label>
-                                                <input class="form-control" id='server_host' name='server_host' type='text' placeholder="Server Host:Port">
-                                                <input class="form-control" id='server_username' name='server_username' type='text' placeholder="Server Username">
-                                                <input class="form-control" id='server_password' name='server_password' type='text' placeholder="Server Password">
+                                                <input class="form-control" id="server_host" name="server_host" type="text" placeholder="Server Host:Port">
+                                                <input class="form-control" id="server_username" name="server_username" type="text" placeholder="Server Username">
+                                                <input class="form-control" id="server_password" name="server_password" type="text" placeholder="Server Password">
                                         </div>
 			
 					<div class="form-group">
@@ -157,7 +157,7 @@
 </div>
 
 <!-- update Modal -->
-<div class="modal team_logo_update fade" tabindex="-1" role="dialog" aria-modal="true">
+<div class="modal team_server_update fade" tabindex="-1" role="dialog" aria-modal="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">

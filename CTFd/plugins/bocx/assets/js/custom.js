@@ -132,5 +132,12 @@ $(document).ready(function () {
      // }
     }
   });
-	
+//add servers inventory
+$('input[name="server_logo_checkbox"]').on('change', function () {
+    $('input[name="server_logo_checkbox"]').not(this).prop('checked', false);
+  });
+$("#team-server-edit-button").click(function () {
+      $(".team_server_update").modal("show");
+  });
+
 });

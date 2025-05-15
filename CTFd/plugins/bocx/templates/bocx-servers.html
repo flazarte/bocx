@@ -173,13 +173,13 @@
 {% block content %}
  <header class="bg-white py-4 shadow-md">
         <div class="container mx-auto px-4">
-            <h1 class="text-2xl font-semibold text-gray-800 text-center">CTF Team Server Topology</h1>
+            <h1 class="text-2xl font-semibold text-gray-800 text-center" style="color:black;">CTF Server Inventory</h1>
         </div>
     </header>
 
     <main class="container mx-auto px-4 py-8">
         <section class="topology-section">
-            <h2 class="section-title">Server Infrastructure</h2>
+            <h2 class="section-title" style="color:white;">List of Server's & Credentials</h2>
             <div id="server-grid" class="server-grid">
                 <div id="loading-indicator" class="loading-indicator">
                     <div class="spinner"></div>
@@ -190,59 +190,28 @@
 
         <section class="credentials-section">
             <h2 class="credentials-title">User Credentials</h2>
-            <p class="mb-4 text-gray-600 text-center">Use the following credentials to access the servers:</p>
+            <p class="mb-4 text-gray-600 text-center" style="color:black;">Use the following credentials to access the servers:</p>
             <table class="credential-table">
                 <thead>
                     <tr>
                         <th>Server</th>
+                        <th>Host</th>
                         <th>Username</th>
                         <th>Password</th>
                     </tr>
                 </thead>
                 <tbody>
+                    {% for server in servers %}
                     <tr>
-                        <td>Web Server 1</td>
-                        <td>ctfuser1</td>
-                        <td>password123</td>
+                        <td style="color:black;">{{ server.server_name }}</td>
+                        <td style="color:black;">{{ server.server_host }}</td>
+                        <td style="color:black;">{{ server.server_username }}</td>
+                        <td style="color:black;">{{ server.server_password }}</td>
                     </tr>
-                    <tr>
-                        <td>Web Server 2</td>
-                        <td>ctfuser2</td>
-                        <td>securepass456</td>
-                    </tr>
-                    <tr>
-                        <td>Database Server</td>
-                        <td>ctf_db_admin</td>
-                        <td>dbpass789</td>
-                    </tr>
-                     <tr>
-                        <td>File Server</td>
-                        <td>ctf_file_user</td>
-                        <td>filepass321</td>
-                    </tr>
-                    <tr>
-                        <td>Challenge Server 1</td>
-                        <td>ctf_chal1</td>
-                        <td>challengepass1</td>
-                    </tr>
-                    <tr>
-                        <td>Challenge Server 2</td>
-                        <td>ctf_chal2</td>
-                        <td>challengepass2</td>
-                    </tr>
-                    <tr>
-                        <td>VPN Access</td>
-                        <td>ctf_vpn</td>
-                        <td>vpnpass123</td>
-                    </tr>
-                    <tr>
-                        <td>Monitoring Server</td>
-                        <td>ctf_monitor</td>
-                        <td>monitorpass</td>
-                    </tr>
+                    {% endfor%}
                 </tbody>
             </table>
-            <p class="mt-4 text-gray-500 text-sm text-center">
+            <p class="mt-4 text-gray-500 text-sm text-center" style="color:black;">
                 <strong>Note:</strong> These credentials are for the CTF environment only.  Do not use them on any other systems.
             </p>
         </section>
@@ -258,54 +227,15 @@
 <script src="{{url_for('bocx.static', filename='templates/assets/js/app.js')}}"></script>
 <script>
         const serverData = [
+           {% for server in servers %}
             {
-                name: "Web Server 1",
-                description: "Handles the main website and challenges.",
-                logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Apache_HTTP_server_logo.svg/800px-Apache_HTTP_server_logo.svg.png",
-                accessUrl: "http://web1.example.com",
+                name: "{{server.server_name}}",
+                description: "{{server.server_description}}",
+                logo: "{{script_root}}{{server.server_image_location }}",
+                accessUrl: "{{server.server_host}}",
             },
-            {
-                name: "Web Server 2",
-                description: "Hosts auxiliary web applications.",
-                logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Nginx_logo.svg/800px-Nginx_logo.svg.png",
-                accessUrl: "http://web2.example.com",
-            },
-            {
-                name: "Database Server",
-                description: "Stores challenge data and user information.",
-                logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/PostgreSQL_Logo.svg/1185px-PostgreSQL_Logo.svg.png",
-                accessUrl: "http://db.example.com",
-            },
-            {
-                name: "File Server",
-                description: "Stores downloadable files and challenge assets.",
-                logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/FileZilla_Logo.svg/1024px-FileZilla_Logo.svg.png",
-                accessUrl: "http://files.example.com",
-            },
-            {
-                name: "Challenge Server 1",
-                description: "Hosts a specific category of challenges.",
-                logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/Docker_Logo.svg/2048px-Docker_Logo.svg.png",
-                accessUrl: "http://challenge1.example.com",
-            },
-             {
-                name: "Challenge Server 2",
-                description: "Hosts another category of challenges.",
-                logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Kubernetes-icon-white.svg/256px-Kubernetes-icon-white.svg.png",
-                accessUrl: "http://challenge2.example.com",
-            },
-            {
-                name: "VPN Access",
-                description: "Provides secure access to the internal network.",
-                logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/OpenVPN-Logo.svg/1024px-OpenVPN-Logo.svg.png",
-                accessUrl: "http://vpn.example.com",
-            },
-            {
-                name: "Monitoring Server",
-                description: "Monitors server performance and uptime.",
-                logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Prometheus_logo.svg/512px-Prometheus_logo.svg.png",
-                accessUrl: "http://monitor.example.com",
-            },
+           {% endfor %}
+
         ];
 
         const serverGrid = document.getElementById("server-grid");
